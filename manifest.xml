@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin_manifest>
+    <field key="author" value="Evan Winslow" />
+    <field key="version" value="0.1" />
+    <field key="description" value="Some ajax libraries for elgg" />
+    <field key="website" value="Link to your website or project page here" />
+    <field key="copyright" value="(C) Administrator 2009" />
+    <field key="licence" value="GPLv2" />
+    <field key="elgg_version" value="2009030702" />    
+</plugin_manifest>
