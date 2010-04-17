@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * $Id$
+ */
 global $ENTITY_CACHE;
 
 
