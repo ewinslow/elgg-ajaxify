@@ -1,5 +1,7 @@
 /**
  * @author Evan Winslow
+ * 
+ * $Id$
  */
 var elgg = elgg || {};
 
@@ -10,8 +12,13 @@ elgg.translations_ = {
 	'delete:confirm': 'Are you sure you want to delete that? There is no undo!'
 };
 
+elgg.cache = elgg.cache || {};
+
 /**
+ * Translates a string
  * 
+ * @param {string} str The string to translate
+ * @return {string} The translation
  */
 elgg.echo = function(str) {
 	translation = elgg.translations_[str];
@@ -74,22 +81,51 @@ elgg.implement = function(obj, iface) {
 };
 
 /**
- * Hold configuration data here (e.g. wwwroot)
+ * Contains a mapping from subtypes to class names.
+ * 
+ * Usage:
+ * In order to find out which class an object is, you would do
+ * 
+ * <pre>
+ * var className = elgg.getClass('object');
+ * </pre>
+ * 
+ * <code>className</code> would then be <code>'ElggObject'</code>.
+ * 
+ * In order to then instantiate a javascript object of that class, do
+ * 
+ * <pre>
+ * new elgg[className](json);
+ * </pre>
+ */
+elgg.subtypes = {
+	'object': {
+		'': 'ElggObject'
+	}
+};
+
+elgg.getClass = function(type, subtype) {
+	if(!subtype) {
+		subtype = '';
+	}
+
+	var t = elgg.subtypes[type];
+	return t ? t[subtype] : false;
+};
+
+/**
+ * Hold configuration data here
  */
 elgg.config = {
 	wwwroot: '/',
 	lastcache: 0
 };
 
-//fill in the actual value later
-elgg.config.wwwroot = '/';
-
 //object for holding security-related methods/data
 elgg.security = {};
 
 /**
  * Make the action tokens available from js.
- * This is filled by js/securitytoken.php
  */
 elgg.security.token = {};
 
@@ -136,7 +172,7 @@ elgg.ajax = function(settings) {
  * adds elgg securitytokens to the request
  * 
  * Note that this function does not have as much flexibility as jQuery.post.
- * You cannot skip parameters.  data must be an object, not a string
+ * You cannot skip parameters.  The data param must be an object, not a string
  * 
  * @param url [string] See jQuery.post
  * @param data [object] See jQuery.post

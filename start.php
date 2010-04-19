@@ -2,8 +2,6 @@
 /**
  * $Id$
  */
-global $ENTITY_CACHE;
-
 
 function ajaxify_init()
 {
