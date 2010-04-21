@@ -1,5 +1,5 @@
 /**
- * Defines based ElggEntity objects
+ * Defines base ElggEntity objects
  * 
  * @param o
  */
@@ -9,42 +9,33 @@ elgg.ElggEntity = function(o) {
 	}
 };
 
+elgg.implement(elgg.ElggEntity, elgg.Notable);
+
+/**
+ * ElggEntity.update
+ * Update this entity with the latest data from the server
+ * 
+ * @return void
+ */
 elgg.ElggEntity.prototype.update = function() {
-	//update this entity with the latest data from the server
+	//TODO
 };
 
 /**
- * Gets the human-readable subtype of this entity
- * @return {string} The subtype
+ * ElggEntity.deleteEntity
+ * Delete this entity
+ * 
+ * @return void
  */
-elgg.ElggEntity.prototype.getSubtype = function() {
-	return elgg.subtypes[this.subtype];
+elgg.ElggEntity.prototype.deleteEntity = function() {
+	return elgg.delete_entity(this.guid);
 };
-
-elgg.implement(elgg.ElggEntity, elgg.Notable);
 
 elgg.cache.entities = {};
 
-//$(function() {
-//	var result = {"object":[[{"guid":"2"}]]};
-//
-//	for (var type in result) {
-//		var subtypes = result[type];
-//		for (var subtype in subtypes) {
-//			var entities = subtypes[subtype];
-//			for (var i in entities) {
-//				var className = elgg.getClass(type, subtype);
-//				alert(className);
-//				var entity = entities[i];
-//				elgg.cache.entities[entity.guid] = new elgg[className](entity);
-//			}
-//		}
-//	}
-//
-//	alert(elgg.cache.entities[2]);
-//});
-
 elgg.get_entity = function(guid) {
+	throw new Error("Not yet implemented");
+	
 	var cached = elgg.cache.entities[guid];
 	if (cached instanceof ElggEntity && !cached.isExpired()) {
 		return cached;
@@ -79,7 +70,7 @@ elgg.get_entity = function(guid) {
  * @return false Always make this the last action
  */
 elgg.delete_entity = function(guid) {
-	if (!confirm('Are you sure you want to delete this? There is no undo!')) {
+	if (!confirm(elgg.echo('delete:confirm'))) {
 		return false;
 	}
 	
@@ -105,21 +96,3 @@ elgg.delete_entity = function(guid) {
 
 	return false;
 };
-
-
-$(function() {
-	var feed = $('#announcements');
-	
-	$.getJSON(elgg.config.wwwroot + 'services/api/rest/json/', {
-		method: 'announcements.get',
-		opts: {
-			container_guid: elgg.page_owner_guid,
-			order_by: 'time_created ASC'
-		}
-	}, function(data) {
-		var entities = data.result;
-		for(var i in entities) {
-			feed.prepend(entities[i].description);
-		}
-	});
-});
