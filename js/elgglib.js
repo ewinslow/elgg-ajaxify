@@ -17,8 +17,9 @@ elgg.cache = elgg.cache || {};
 /**
  * Translates a string
  * 
- * @param {string} str The string to translate
- * @return {string} The translation
+ * @param {String} str The string to translate
+ * @return The translation
+ * @type {String}
  */
 elgg.echo = function(str) {
 	translation = elgg.translations_[str];
@@ -56,10 +57,10 @@ elgg.echo = function(str) {
  *
  * @param {Function} childCtor Child class.
  * @param {Function} parentCtor Parent class.
+ * @return void
  */
 elgg.inherit = function(childCtor, parentCtor) {
-	/** @constructor */
-	function tempCtor() {};
+	function tempCtor() {}
 	tempCtor.prototype = parentCtor.prototype;
 	childCtor.superClass_ = parentCtor.prototype;
 	childCtor.prototype = new tempCtor();
@@ -69,8 +70,9 @@ elgg.inherit = function(childCtor, parentCtor) {
 /**
  * Implement an interface
  * 
- * @param {Function} obj Inheriting class
- * @param {Object} iface Interface to implement
+ * @param {Function} obj The inheriting class
+ * @param {Object} iface The interface to implement
+ * @return void
  */
 elgg.implement = function(obj, iface) {
 	for (var member in iface) {
@@ -78,39 +80,6 @@ elgg.implement = function(obj, iface) {
 			obj.prototype[member] = iface[member];
 		}
 	}
-};
-
-/**
- * Contains a mapping from subtypes to class names.
- * 
- * Usage:
- * In order to find out which class an object is, you would do
- * 
- * <pre>
- * var className = elgg.getClass('object');
- * </pre>
- * 
- * <code>className</code> would then be <code>'ElggObject'</code>.
- * 
- * In order to then instantiate a javascript object of that class, do
- * 
- * <pre>
- * new elgg[className](json);
- * </pre>
- */
-elgg.subtypes = {
-	'object': {
-		'': 'ElggObject'
-	}
-};
-
-elgg.getClass = function(type, subtype) {
-	if(!subtype) {
-		subtype = '';
-	}
-
-	var t = elgg.subtypes[type];
-	return t ? t[subtype] : false;
 };
 
 /**
@@ -131,41 +100,75 @@ elgg.security.token = {};
 
 /**
  * Security tokens time out, so lets refresh those every so often
+ * 
+ * @return void
  */
 elgg.security.refreshtoken = function() {
-	elgg.ajax({
-		type: 'post',
-		url: elgg.config.wwwroot + 'action/ajax/securitytoken',
-		action: true, //need tokens to generate tokens
-		dataType: 'json',
-		success: function(data) {
-			//update the convenience object
-			elgg.security.token = data;
-			
-			//also update all forms
-			$('[name=__elgg_ts]').val(data.__elgg_ts);
-			$('[name=__elgg_token]').val(data.__elgg_token);
-		}
-	});
+	elgg.post('action/ajax/securitytoken', {}, function(data) {
+		//update the convenience object
+		elgg.security.token = data;
+		
+		//also update all forms
+		$('[name=__elgg_ts]').val(data.__elgg_ts);
+		$('[name=__elgg_token]').val(data.__elgg_token);
+	}, 'json');
 };
 
 /**
- * Wrapper function for $.ajax which provides an extra setting 'action.'
+ * Add elgg action tokens to an object
+ * 
+ * @param {Object} data The data object to add the action tokens to
+ * @return The new data object including action tokens
+ * @type {Object}
+ * @private
+ */
+elgg.security.addToken_ = function(data) {
+	if (typeof data == 'object') {
+		$.extend(data, elgg.security.token);
+	} else if (typeof data == 'string') {
+		throw new TypeError("Function elgg.security.addToken_ does not accept string input yet");
+	}
+	
+	return data;
+};
+
+/**
+ * Prepend elgg.config.wwwroot to a url if the url doesn't already have it.
+ * 
+ * @param {String} url The url to extend
+ * @return The extended url
+ * @type {String}
+ * @private
+ */
+elgg.extendUrl_ = function(url) {
+	if(!(new RegExp(elgg.config.wwwroot).test(url))) {
+		url = elgg.config.wwwroot + url;
+	}
+	
+	return url;
+};
+
+/**
+ * Wrapper function for jQuery.ajax which provides an extra setting 'action.'
  * 
  * If 'action' is true, adds the elgg security tokens to the request data
  * Note that settings.data must be an object for this to work.
  * 
- * @param settings See $.ajax
- * 		[boolean] 'action' If true, adds elgg security tokens to request data
+ * @param settings {@see jQuery#ajax}
+ * 		{Boolean} settings[action] Whether to add elgg security tokens to request data
  * @return XmlHttpRequest
  */
 elgg.ajax = function(settings) {
 	if (settings.action) {
-		settings.data = settings.data || {};
-		$.extend(settings.data, elgg.security.token);
+		settings.data = elgg.security.addToken_(settings.data || {});
 	}
+	
+	settings.url = elgg.extendUrl_(settings.url);
+	
 	return $.ajax(settings);
 };
+
+
 
 /**
  * Wrapper function for jQuery.post which automatically
@@ -174,46 +177,74 @@ elgg.ajax = function(settings) {
  * Note that this function does not have as much flexibility as jQuery.post.
  * You cannot skip parameters.  The data param must be an object, not a string
  * 
- * @param url [string] See jQuery.post
- * @param data [object] See jQuery.post
- * @param success [function] See jQuery.post
- * @param dataType [string] See jQuery.post
+ * @param {String} url See jQuery.post
+ * @param {Object} data See jQuery.post
+ * @param {Function} success See jQuery.post
+ * @param {String} dataType See jQuery.post
  * 
  * @return XmlHttpRequest
  */
 elgg.post = function(url, data, success, dataType) {
-	data = data || {};
-	$.extend(data, elgg.security.token);
+	url = elgg.extendUrl_(url);
+	data = elgg.security.addToken_(data || {});
 	return $.post(url, data, success, dataType);
+};
+
+/**
+ * Make an API call
+ * 
+ * Usage:
+ * <pre>
+ * elgg.api('system.api.list', {
+ *     success: function(data) {
+ *         alert(data.message);
+ *     }
+ * });
+ * </pre>
+ * 
+ * @param {String} method The API method to be called
+ * @param {Object} options {@see elgg.ajax}
+ * 	{String} options[dataType] defaults to 'json'
+ * @return {XmlHttpRequest} The XHR object
+ */
+elgg.api = function(method, options) {
+	options = options || {};
+	options.dataType = options.dataType || 'json';
+	options.url = 'services/api/rest/' + options.dataType + '/';
+	options.data = (options.data || {}).method = method;
+	return elgg.ajax(options);
 };
 
 /**
  * Displays system messages via javascript rather than php.
  * 
- * @param msg The message we want to display
- * @param delay The amount of time to display the message in milliseconds
- * @param type The type of message (typically 'error' or 'message')
- * @return jQuery The jquery object of the new system message
+ * @param {String} msg The message we want to display
+ * @param {Number} delay The amount of time to display the message in milliseconds
+ * @param {String} type The type of message (typically 'error' or 'message')
+ * @return The jquery object of the new system message
+ * @type {jQuery}
+ * @private
  */
 elgg.system_messages = function(msg, delay, type) {
 	//validate delay.  Must be a positive integer. Default to 3 seconds.
 	delay = parseInt(delay);
-	if(isNaN(delay) || delay <= 0) { delay = 3000; }
+	if (isNaN(delay) || delay <= 0) {
+		delay = 3000;
+	}
 	
 	return $("<div/>", {
-		'class': 'elgg_system_message ' + type
-	}).append(msg)
-	.appendTo('#elgg_system_messages')
-	.show()
-	.animate({opacity:'1.0'},delay)
-	.fadeOut('slow');
+		'class': 'elgg_system_message ' + type,
+		'html': msg
+	}).appendTo('#elgg_system_messages').show()
+	.animate({opacity:'1.0'},delay).fadeOut('slow');
 };
 
 /**
  * Wrapper function for system_messages. Specifies "messages" as the type of message
- * @param msg See elgg.system_messages
- * @param delay See elgg.system_messages
- * @return true
+ * @param {String} msg The message to display
+ * @param {String} delay How long to display the message (milliseconds)
+ * @return The jQuery object of the message
+ * @type {jQuery}
  */
 elgg.system_message = function(msg, delay) {
 	return elgg.system_messages(msg, delay, "message");
@@ -221,9 +252,10 @@ elgg.system_message = function(msg, delay) {
 
 /**
  * Wrapper function for system_messages.  Specifies "errors" as the type of message
- * @param error See elgg.system_messages
- * @param delay See elgg.system_messages
- * @return true
+ * @param {String} error The error message to display
+ * @param {Number} delay How long to dispaly the error message (milliseconds)
+ * @return The jQuery object of the error message
+ * @type {jQuery}
  */
 elgg.register_error = function(error, delay) {
 	return elgg.system_messages(error, delay, "error");
@@ -246,7 +278,7 @@ elgg.delete_annotation = function(id) {
 	
 	elgg.ajax({
 		type: 'post',
-		url: elgg.config.wwwroot + 'action/ajax/annotation/delete',
+		url: 'action/ajax/annotation/delete',
 		data: {
 			annotation_id: id
 		},
@@ -267,10 +299,11 @@ elgg.delete_annotation = function(id) {
  * Meant to mimic the php forward() function by simply redirecting the
  * user to another page.
  * 
- * @param url The url to forward to
+ * @param {String} url The url to forward to
+ * @return void
  */
 elgg.forward = function(url) {
-	location.href = url;
+	location.href = elgg.extendUrl_(url);
 };
 
 /**
@@ -280,6 +313,7 @@ elgg.mod = {};
 
 /**
  * Initialise Elgg
+ * @return void
  */
 elgg.init = function() {
 	//refresh security token every 5 minutes
