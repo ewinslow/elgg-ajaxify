@@ -85,7 +85,7 @@ elgg.implement = function(obj, iface) {
 
 //object for holding security-related methods/data
 elgg.security = {};
-elgg.security.token;
+elgg.security.token = {};
 elgg.security.interval = 5 * 60 * 1000;
 
 /**

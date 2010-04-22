@@ -11,7 +11,12 @@ elgg.config.translations = {};
  */
 elgg.get_language = function() {
 	var user = elgg.get_loggedin_user();
-	return user.language || elgg.config.language;
+	
+	if (user && user.language) {
+		return user.language;
+	}
+	
+	return elgg.config.language;
 };
 
 /**
