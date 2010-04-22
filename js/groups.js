@@ -1,39 +1,36 @@
 /**
- * ElggGroup
+ * Create a new group
  * 
- * @param {Object} o
- * @base ElggEntity
- * @constructor
+ * @param {number} guid
+ * @class Represents a group
+ * @extends ElggEntity
+ * @property {string} name
+ * @property {string} description
  */
-elgg.ElggGroup = function(o) {
-	elgg.ElggEntity.call(this,o);
+elgg.ElggGroup = function(guid) {
+	elgg.ElggEntity.call(this, guid);
 };
 
 elgg.inherit(elgg.ElggGroup, elgg.ElggEntity);
 
 
 /**
- * Join the logged in user to a group
+ * Join the specified user to this group
+ * @param {number} user_guid
  */
-elgg.ElggGroup.prototype.join = function() {
-	var _this = this;
- 	elgg.api('group.join', {
- 		type: 'post',
- 		data: {
-	 		guid: _this.guid
- 		}
- 	});
+elgg.ElggGroup.prototype.join = function(user_guid) {
+	return elgg.action('groups/join', {
+		data: {
+			group_guid: this.guid,
+			user_guid: user_guid
+		}
+	});
 };
 
 /**
  * Make the logged in user leave the group
  */
 elgg.ElggGroup.prototype.leave = function() {
-	var _this = this;
- 	elgg.api('group.leave', {
- 		type: 'post',
- 		data: {
-	 		guid: _this.guid
- 		}
- 	});
+	//TODO Implement
+	throw new Error("Not yet implemented.");
 };

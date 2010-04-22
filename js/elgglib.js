@@ -3,28 +3,29 @@
  * 
  * $Id$
  */
+
+/**
+ * @namespace Namespace for elgg javascript functions
+ */
 var elgg = elgg || {};
 
-/**
- * @private
- */
-elgg.translations_ = {
-	'delete:confirm': 'Are you sure you want to delete that? There is no undo!'
-};
+elgg.ACCESS_PUBLIC = 2;
+elgg.ACCESS_LOGGED_IN = 1;
+elgg.ACCESS_PRIVATE = 0;
+elgg.ACCESS_DEFAULT = -1;
+elgg.ACCESS_FRIENDS = -2;
 
-elgg.cache = elgg.cache || {};
+elgg.ENTITIES_ANY_VALUE = null;
+elgg.ENTITIES_NO_VALUE = 0;
+
+elgg.cache = {};
 
 /**
- * Translates a string
- * 
- * @param {String} str The string to translate
- * @return The translation
- * @type {String}
+ * Hold configuration data here
  */
-elgg.echo = function(str) {
-	translation = elgg.translations_[str];
-	return (translation != undefined) ? translation : str;
-};
+elgg.config = {};
+elgg.config.wwwroot;
+elgg.config.lastcache;
 
 /**
  * Inherit the prototype methods from one constructor into another.
@@ -82,21 +83,10 @@ elgg.implement = function(obj, iface) {
 	}
 };
 
-/**
- * Hold configuration data here
- */
-elgg.config = {
-	wwwroot: '/',
-	lastcache: 0
-};
-
 //object for holding security-related methods/data
 elgg.security = {};
-
-/**
- * Make the action tokens available from js.
- */
-elgg.security.token = {};
+elgg.security.token;
+elgg.security.interval = 5 * 60 * 1000;
 
 /**
  * Security tokens time out, so lets refresh those every so often
@@ -104,29 +94,30 @@ elgg.security.token = {};
  * @return void
  */
 elgg.security.refreshtoken = function() {
-	elgg.post('action/ajax/securitytoken', {}, function(data) {
-		//update the convenience object
-		elgg.security.token = data;
-		
-		//also update all forms
-		$('[name=__elgg_ts]').val(data.__elgg_ts);
-		$('[name=__elgg_token]').val(data.__elgg_token);
-	}, 'json');
+	elgg.action('ajax/securitytoken', {
+		success: function(json) {
+			//update the convenience object
+			elgg.security.token = json;
+			
+			//also update all forms
+			$('[name=__elgg_ts]').val(json.__elgg_ts);
+			$('[name=__elgg_token]').val(json.__elgg_token);
+		}
+	});
 };
 
 /**
  * Add elgg action tokens to an object
  * 
  * @param {Object} data The data object to add the action tokens to
- * @return The new data object including action tokens
- * @type {Object}
+ * @return {Object} The new data object including action tokens
  * @private
  */
-elgg.security.addToken_ = function(data) {
+elgg.security.addToken = function(data) {
 	if (typeof data == 'object') {
 		$.extend(data, elgg.security.token);
 	} else if (typeof data == 'string') {
-		throw new TypeError("Function elgg.security.addToken_ does not accept string input yet");
+		throw new TypeError("Function elgg.security.addToken does not accept string input yet");
 	}
 	
 	return data;
@@ -136,12 +127,11 @@ elgg.security.addToken_ = function(data) {
  * Prepend elgg.config.wwwroot to a url if the url doesn't already have it.
  * 
  * @param {String} url The url to extend
- * @return The extended url
- * @type {String}
+ * @return {String} The extended url
  * @private
  */
-elgg.extendUrl_ = function(url) {
-	if(!(new RegExp(elgg.config.wwwroot).test(url))) {
+elgg.extendUrl = function(url) {
+	if(url.indexOf(elgg.config.wwwroot) == -1) {
 		url = elgg.config.wwwroot + url;
 	}
 	
@@ -149,80 +139,12 @@ elgg.extendUrl_ = function(url) {
 };
 
 /**
- * Wrapper function for jQuery.ajax which provides an extra setting 'action.'
- * 
- * If 'action' is true, adds the elgg security tokens to the request data
- * Note that settings.data must be an object for this to work.
- * 
- * @param settings {@see jQuery#ajax}
- * 		{Boolean} settings[action] Whether to add elgg security tokens to request data
- * @return XmlHttpRequest
- */
-elgg.ajax = function(settings) {
-	if (settings.action) {
-		settings.data = elgg.security.addToken_(settings.data || {});
-	}
-	
-	settings.url = elgg.extendUrl_(settings.url);
-	
-	return $.ajax(settings);
-};
-
-
-
-/**
- * Wrapper function for jQuery.post which automatically
- * adds elgg securitytokens to the request
- * 
- * Note that this function does not have as much flexibility as jQuery.post.
- * You cannot skip parameters.  The data param must be an object, not a string
- * 
- * @param {String} url See jQuery.post
- * @param {Object} data See jQuery.post
- * @param {Function} success See jQuery.post
- * @param {String} dataType See jQuery.post
- * 
- * @return XmlHttpRequest
- */
-elgg.post = function(url, data, success, dataType) {
-	url = elgg.extendUrl_(url);
-	data = elgg.security.addToken_(data || {});
-	return $.post(url, data, success, dataType);
-};
-
-/**
- * Make an API call
- * 
- * Usage:
- * <pre>
- * elgg.api('system.api.list', {
- *     success: function(data) {
- *         alert(data.message);
- *     }
- * });
- * </pre>
- * 
- * @param {String} method The API method to be called
- * @param {Object} options {@see elgg.ajax}
- * 	{String} options[dataType] defaults to 'json'
- * @return {XmlHttpRequest} The XHR object
- */
-elgg.api = function(method, options) {
-	options = options || {};
-	options.dataType = options.dataType || 'json';
-	options.url = 'services/api/rest/' + options.dataType + '/';
-	options.data = (options.data || {}).method = method;
-	return elgg.ajax(options);
-};
-
-/**
  * Displays system messages via javascript rather than php.
  * 
- * @param {String} msg The message we want to display
- * @param {Number} delay The amount of time to display the message in milliseconds
- * @param {String} type The type of message (typically 'error' or 'message')
- * @return The jquery object of the new system message
- * @type {jQuery}
+ * @param {string} msg The message we want to display
+ * @param {number} delay The amount of time to display the message in milliseconds
+ * @param {string} type The type of message (typically 'error' or 'message')
+ * @return void
  * @private
  */
 elgg.system_messages = function(msg, delay, type) {
@@ -232,7 +154,7 @@ elgg.system_messages = function(msg, delay, type) {
 		delay = 3000;
 	}
 	
-	return $("<div/>", {
+	$("<div/>", {
 		'class': 'elgg_system_message ' + type,
 		'html': msg
 	}).appendTo('#elgg_system_messages').show()
@@ -242,9 +164,8 @@ elgg.system_messages = function(msg, delay, type) {
 /**
  * Wrapper function for system_messages. Specifies "messages" as the type of message
  * @param {String} msg The message to display
- * @param {String} delay How long to display the message (milliseconds)
- * @return The jQuery object of the message
- * @type {jQuery}
+ * @param {number} delay How long to display the message (milliseconds)
+ * @return void
  */
 elgg.system_message = function(msg, delay) {
 	return elgg.system_messages(msg, delay, "message");
@@ -253,46 +174,11 @@ elgg.system_message = function(msg, delay) {
 /**
  * Wrapper function for system_messages.  Specifies "errors" as the type of message
  * @param {String} error The error message to display
- * @param {Number} delay How long to dispaly the error message (milliseconds)
- * @return The jQuery object of the error message
- * @type {jQuery}
+ * @param {number} delay How long to dispaly the error message (milliseconds)
+ * @return void
  */
 elgg.register_error = function(error, delay) {
 	return elgg.system_messages(error, delay, "error");
-};
-
-/**
- * Deletes an annotation
- * 
- * @param id The id of the annotation to delete
- * @return false Forces this to be the last action that occurs.
- */
-elgg.delete_annotation = function(id) {
-	if (!confirm(elgg.echo('delete:confirm'))) {
-		return false;
-	}
-	
-	$annotation = $('.annotation.editable[data-id='+id+']');
-	
-	$annotation.slideUp();
-	
-	elgg.ajax({
-		type: 'post',
-		url: 'action/ajax/annotation/delete',
-		data: {
-			annotation_id: id
-		},
-		action: true,
-		success: function(data) {
-			elgg.system_message(data);
-		},
-		error: function(xhr) { // oops
-			$annotation.slideDown();
-			elgg.register_error(xhr.responseText);
-		}
-	});
-	
-	return false;
 };
 
 /**
@@ -303,7 +189,7 @@ elgg.delete_annotation = function(id) {
  * @return void
  */
 elgg.forward = function(url) {
-	location.href = elgg.extendUrl_(url);
+	location.href = elgg.extendUrl(url);
 };
 
 /**
@@ -311,20 +197,27 @@ elgg.forward = function(url) {
  */
 elgg.mod = {};
 
+elgg.plugins = [];
+
 /**
  * Initialise Elgg
  * @return void
  */
 elgg.init = function() {
+	elgg.load_translations();
+	
 	//refresh security token every 5 minutes
-	setInterval(elgg.security.refreshtoken, 5 * 60 * 1000);
+	setInterval(elgg.security.refreshtoken, elgg.security.interval);
 	
 	//if the user clicks a system message, make it disappear
 	$('#elgg_system_messages').delegate('.elgg_system_message', 'click', function() {
 		$(this).stop().fadeOut('fast');
 	});
+	
+	for (var i in elgg.plugins) {
+		elgg.plugins[i].init();
+	}
 };
 
-$(function() {
-	elgg.init();
-});
+//Initialise Elgg
+$(elgg.init);

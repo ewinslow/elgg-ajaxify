@@ -1,8 +1,18 @@
+elgg.config.site;
+
 /**
- * ElggSite support
+ * Create a new ElggSite
+ *
+ * @param {number|Object} guid
+ * @extends ElggEntity
+ * @class Represents an ElggSite
+ * @property {string} name
+ * @property {string} description
+ * @property {string} url
  */
-elgg.ElggSite = function(o) {
-	elgg.ElggEntity.call(this, o);
+elgg.ElggSite = function(guid) {
+	elgg.ElggEntity.call(this, guid);
 };
 
 elgg.inherit(elgg.ElggSite, elgg.ElggEntity);
+
