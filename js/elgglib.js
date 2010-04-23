@@ -58,7 +58,6 @@ elgg.config.lastcache;
  *
  * @param {Function} childCtor Child class.
  * @param {Function} parentCtor Parent class.
- * @return void
  */
 elgg.inherit = function(childCtor, parentCtor) {
 	function tempCtor() {}
@@ -73,7 +72,6 @@ elgg.inherit = function(childCtor, parentCtor) {
  * 
  * @param {Function} obj The inheriting class
  * @param {Object} iface The interface to implement
- * @return void
  */
 elgg.implement = function(obj, iface) {
 	for (var member in iface) {
@@ -90,8 +88,6 @@ elgg.security.interval = 5 * 60 * 1000;
 
 /**
  * Security tokens time out, so lets refresh those every so often
- * 
- * @return void
  */
 elgg.security.refreshtoken = function() {
 	elgg.action('ajax/securitytoken', {
@@ -131,6 +127,7 @@ elgg.security.addToken = function(data) {
  * @private
  */
 elgg.extendUrl = function(url) {
+	url = url || '';
 	if(url.indexOf(elgg.config.wwwroot) == -1) {
 		url = elgg.config.wwwroot + url;
 	}
@@ -144,7 +141,6 @@ elgg.extendUrl = function(url) {
  * @param {string} msg The message we want to display
  * @param {number} delay The amount of time to display the message in milliseconds
  * @param {string} type The type of message (typically 'error' or 'message')
- * @return void
  * @private
  */
 elgg.system_messages = function(msg, delay, type) {
@@ -165,20 +161,18 @@ elgg.system_messages = function(msg, delay, type) {
  * Wrapper function for system_messages. Specifies "messages" as the type of message
  * @param {String} msg The message to display
  * @param {number} delay How long to display the message (milliseconds)
- * @return void
  */
 elgg.system_message = function(msg, delay) {
-	return elgg.system_messages(msg, delay, "message");
+	elgg.system_messages(msg, delay, "message");
 };
 
 /**
  * Wrapper function for system_messages.  Specifies "errors" as the type of message
  * @param {String} error The error message to display
  * @param {number} delay How long to dispaly the error message (milliseconds)
- * @return void
  */
 elgg.register_error = function(error, delay) {
-	return elgg.system_messages(error, delay, "error");
+	elgg.system_messages(error, delay, "error");
 };
 
 /**
@@ -186,7 +180,6 @@ elgg.register_error = function(error, delay) {
  * user to another page.
  * 
  * @param {String} url The url to forward to
- * @return void
  */
 elgg.forward = function(url) {
 	location.href = elgg.extendUrl(url);
@@ -197,7 +190,7 @@ elgg.forward = function(url) {
  */
 elgg.mod = {};
 
-elgg.plugins = [];
+elgg.plugins = {};
 
 /**
  * Initialise Elgg
@@ -215,7 +208,10 @@ elgg.init = function() {
 	});
 	
 	for (var i in elgg.plugins) {
-		elgg.plugins[i].init();
+		var plugin = elgg.plugins[i];
+		if (typeof plugin.init == 'function') {
+			plugin.init();
+		}
 	}
 };
 
