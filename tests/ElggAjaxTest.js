@@ -6,9 +6,10 @@ ElggAjaxTest = TestCase("ElggAjaxTest");
 
 ElggAjaxTest.prototype.setUp = function() {
 	
-	elgg.config.wwwroot = 'http://www.elgg.org/';
-	
+	this.wwwroot = elgg.config.wwwroot;
 	this.ajax = $.ajax;
+	
+	elgg.config.wwwroot = 'http://www.elgg.org/';
 	
 	$.ajax = function(options) {
 		return options;
@@ -17,6 +18,7 @@ ElggAjaxTest.prototype.setUp = function() {
 
 ElggAjaxTest.prototype.tearDown = function() {
 	$.ajax = this.ajax;
+	elgg.config.wwwroot = this.wwwroot;
 };
 
 ElggAjaxTest.prototype.testElggAjax = function() {
