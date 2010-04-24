@@ -1,45 +1,54 @@
+/**
+ * Makes sure that each of the helper ajax functions ends up calling $.ajax
+ * with the right options.
+ */
 ElggAjaxTest = TestCase("ElggAjaxTest");
 
-ElggAjaxTest.prototype.testHandleOptionsAcceptsNoArgs = function() {
-	assertNotUndefined(elgg.ajax.handleOptions());
+ElggAjaxTest.prototype.setUp = function() {
+	this.ajax = $.ajax;
 	
+	$.ajax = function(options) {
+		return options;
+	};
 };
 
-ElggAjaxTest.prototype.testHandleOptionsAcceptsUrl = function() {
-	var url = 'url',
-		result = elgg.ajax.handleOptions(url);
-	
-	assertEquals(url, result.url);
+ElggAjaxTest.prototype.tearDown = function() {
+	$.ajax = this.ajax;
 };
 
-ElggAjaxTest.prototype.testHandleOptionsAcceptsDataOnly = function() {
-	var options = {},
-		result = elgg.ajax.handleOptions(options);
-	
-	assertEquals(options, result.data);
+ElggAjaxTest.prototype.testElggAjax = function() {
+	assertEquals(elgg.config.wwwroot, elgg.ajax().url);
 };
 
-ElggAjaxTest.prototype.testHandleOptionsAcceptsOptions = function() {
-	var options = {data:{arg:1}},
-		result = elgg.ajax.handleOptions(options);
-	
-	assertEquals(options, result);
+ElggAjaxTest.prototype.testElggGet = function() {
+	assertEquals('get', elgg.get().type);
 };
 
-ElggAjaxTest.prototype.testHandleOptionsAcceptsUrlThenDataOnly = function() {
-	var url = 'url',
-		options = {arg:1},
-		result = elgg.ajax.handleOptions(url, options);
-	
-	assertEquals(url, result.url);
-	assertEquals(options, result.data);
+ElggAjaxTest.prototype.testElggGetJSON = function() {
+	assertEquals('json', elgg.getJSON().dataType);
 };
 
-ElggAjaxTest.prototype.testHandleOptionsAcceptsUrlThenOptions = function() {
-	var url = 'url',
-	options = {data:{arg:1}},
-	result = elgg.ajax.handleOptions(url, options);
+ElggAjaxTest.prototype.testElggPost = function() {
+	assertEquals('post', elgg.post().type);
+};
+
+ElggAjaxTest.prototype.testElggAction = function() {
+	assertException(function() { elgg.action(); });
+	assertException(function() { elgg.action({}); });
 	
-	assertEquals(url, result.url);
-	assertEquals(options.data, result.data);
+	var result = elgg.action('action');
+	assertEquals('post', result.type);
+	assertEquals('json', result.dataType);
+	assertEquals(elgg.config.wwwroot + 'action/action', result.url);
+	assertEquals(elgg.security.token.__elgg_ts, result.data.__elgg_ts);
+};
+
+ElggAjaxTest.prototype.testElggAPI = function() {
+	assertException(function() { elgg.api(); });
+	assertException(function() { elgg.api({}); });
+	
+	var result = elgg.api('method');
+	assertEquals('json', result.dataType);
+	assertEquals('method', result.data.method);
+	assertEquals(elgg.config.wwwroot + 'services/api/rest/json/', result.url);
 };

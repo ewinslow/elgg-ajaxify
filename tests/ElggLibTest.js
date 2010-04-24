@@ -1,10 +1,10 @@
-ElggTest = TestCase("ElggTest");
+ElggLibTest = TestCase("ElggLibTest");
 
-ElggTest.prototype.testGlobal = function() {
+ElggLibTest.prototype.testGlobal = function() {
 	assertEquals(window.location, elgg.global.window.location);
 };
 
-ElggTest.prototype.testProvide = function() {
+ElggLibTest.prototype.testProvide = function() {
 	elgg.provide('foo.bar.baz');
 	
 	assertNotUndefined(foo);
@@ -18,7 +18,7 @@ ElggTest.prototype.testProvide = function() {
 	assertEquals(str, foo.bar.baz.oof);
 };
 
-ElggTest.prototype.testRequire = function() {
+ElggLibTest.prototype.testRequire = function() {
 	/* Try requiring bogus input */
 	assertException(function(){ elgg.require(''); });
 	assertException(function(){ elgg.require('garbage'); });
@@ -30,7 +30,7 @@ ElggTest.prototype.testRequire = function() {
 	assertNoException(function(){ elgg.require('elgg.security'); });
 };
 
-ElggTest.prototype.testInherit = function() {
+ElggLibTest.prototype.testInherit = function() {
 	function Base() {}
 	function Child() {}
 	
@@ -39,7 +39,7 @@ ElggTest.prototype.testInherit = function() {
 	assertInstanceOf(Base, new Child());
 };
 
-ElggTest.prototype.testImplement = function() {
+ElggLibTest.prototype.testImplement = function() {
 	function Base() {}
 	elgg.implement(Base, {
 		fun: function() {},
@@ -57,7 +57,7 @@ ElggTest.prototype.testImplement = function() {
 	assertNotUndefined(b.fun);
 };
 
-ElggTest.prototype.testExtendUrl = function() {
+ElggLibTest.prototype.testExtendUrl = function() {
 	var url;
 	elgg.config.wwwroot = "http://www.elgg.org/";
 	

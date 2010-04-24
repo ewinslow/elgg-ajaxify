@@ -151,6 +151,12 @@ elgg.post = function(url, options) {
  * @return {XMLHttpRequest}
  */
 elgg.action = function(action, options) {
+	if(!action) {
+		throw new TypeError("action must be specified");
+	} else if (typeof action != 'string') {
+		throw new TypeError("action must be a string");
+	}
+	
 	options = elgg.ajax.handleOptions('action/' + action, options);
 	
 	options.data = elgg.security.addToken(options.data);
@@ -176,6 +182,12 @@ elgg.action = function(action, options) {
  * @return {XmlHttpRequest}
  */
 elgg.api = function(method, options) {
+	if (!method) {
+		throw new TypeError("method must be specified");
+	} else if (typeof method != 'string') {
+		throw new TypeError("method must be a string");
+	}
+	
 	var defaults = {
 		dataType: 'json',
 		data: {}
@@ -184,8 +196,8 @@ elgg.api = function(method, options) {
 	options = elgg.ajax.handleOptions(method, options);
 	options = $.extend(defaults, options);
 	
-	options.data.method = method;
 	options.url = 'services/api/rest/' + options.dataType + '/';
+	options.data.method = method;
 	
 	return elgg.ajax(options);
 };
