@@ -10,16 +10,26 @@ $(function() {
 });
 
 elgg.config.translations.init = function() {
-	elgg.getJSON({
-		url: '_css/js.php',
+	elgg.config.translations.load();
+};
+
+/**
+ * Load the translations for the given language.
+ * 
+ * If no language is specified, the default language is used.
+ * @param {string} language
+ * @return {XMLHttpRequest}
+ */
+elgg.config.translations.load = function(language) {
+	var lang = language || elgg.get_language();
+	return elgg.getJSON('_css/js.php', {
 		data: {
 			js: 'translations',
-			language: elgg.get_language(),
+			language: lang,
 			lastcache: elgg.config.lastcache
 		},
 		success: function(json) {
-			var language = elgg.get_language();
-			elgg.config.translations[language] = json;
+			elgg.config.translations[lang] = json;
 		}
 	});
 };
@@ -46,7 +56,24 @@ elgg.get_language = function() {
  * @return {String} The translation
  */
 elgg.echo = function(key, language) {
-	language = language || elgg.get_language();
-	var translations = elgg.config.translations[language];
-	return (translations && translations[key]) ? translations[key] : key;
+	var translations,
+		dlang = elgg.get_language();
+	
+	language = language || dlang;
+	
+	translations = elgg.config.translations[language];
+	if (translations && translations[key]) {
+		return translations[key];
+	}
+	
+	if (language == dlang) {
+		return undefined;
+	}
+	
+	translations = elgg.config.translations[dlang];
+	if (translations && translations[key]) {
+		return translations[key];
+	}
+	
+	return undefined;
 };
