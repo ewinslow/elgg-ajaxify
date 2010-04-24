@@ -5,6 +5,9 @@
 ElggAjaxTest = TestCase("ElggAjaxTest");
 
 ElggAjaxTest.prototype.setUp = function() {
+	
+	elgg.config.wwwroot = 'http://www.elgg.org/';
+	
 	this.ajax = $.ajax;
 	
 	$.ajax = function(options) {
