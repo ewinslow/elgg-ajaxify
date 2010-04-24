@@ -1,0 +1,65 @@
+/**
+ * Hold security-related data here
+ */
+elgg.provide('elgg.security');
+
+elgg.security.token = {};
+
+$(function() {
+	elgg.security.init();
+});
+
+elgg.security.init = function() {
+	//refresh security token every 5 minutes
+	setInterval(elgg.security.refreshToken, elgg.security.interval);
+};
+
+elgg.security.setToken = function(json) {
+	//update the convenience object
+	elgg.security.token = json;
+	
+	//also update all forms
+	$('[name=__elgg_ts]').val(json.__elgg_ts);
+	$('[name=__elgg_token]').val(json.__elgg_token);
+};
+
+/**
+ * Security tokens time out, so lets refresh those every so often
+ * @todo handle error and bad return data
+ */
+elgg.security.refreshToken = function() {
+	elgg.action('ajax/securitytoken', {
+		success: elgg.security.setToken
+	});
+};
+
+
+/**
+ * Add elgg action tokens to an object or string (assumed to be url data)
+ * 
+ * @param {Object|string} data
+ * @return {Object} The new data object including action tokens
+ * @private
+ */
+elgg.security.addToken = function(data) {
+
+	//addToken('data=sofar')
+	if (typeof data == 'string') {
+		var args = [];
+		if(data) {
+			args.push(data);
+		}
+		args.push("__elgg_ts=" + elgg.security.token.__elgg_ts);
+		args.push("__elgg_token=" + elgg.security.token.__elgg_token)
+		
+		return args.join('&');
+	}
+	
+	//addToken({...})
+	if (typeof data == 'object' || typeof data == 'undefined') {
+		return $.extend(data, elgg.security.token);
+	}
+
+	//addToken(???)
+	throw new TypeError("elgg.security.addToken not implemented for " + (typeof data) + "s");
+};

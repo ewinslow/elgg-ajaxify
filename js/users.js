@@ -26,10 +26,12 @@ elgg.ElggUser.prototype.isAdmin = function() {
  * @param {Number} guid
  */
 elgg.ElggUser.prototype.addFriend = function(guid) {
- 	elgg.api('friend.add', {
- 		type: 'post',
+ 	elgg.action('friend/add', {
  		data: {
  			guid: guid
+ 		},
+ 		success: function() {
+ 			//TODO What happens on success?
  		}
  	});
 };
@@ -40,10 +42,12 @@ elgg.ElggUser.prototype.addFriend = function(guid) {
  * @param {Number} guid
  */
 elgg.ElggUser.prototype.removeFriend = function(guid) {
- 	elgg.api('friend.remove', {
- 		type: 'post',
+ 	elgg.action('friend/remove', {
  		data: {
  			guid: guid
+ 		},
+ 		success: function() {
+ 			//TODO What happens on success?
  		}
  	});
 };

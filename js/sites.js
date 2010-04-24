@@ -1,5 +1,3 @@
-elgg.config.site;
-
 /**
  * Create a new ElggSite
  *

@@ -17,20 +17,33 @@ elgg.inherit(elgg.ElggGroup, elgg.ElggEntity);
 /**
  * Join the specified user to this group
  * @param {number} user_guid
+ * @return {XMLHttpRequest}
  */
 elgg.ElggGroup.prototype.join = function(user_guid) {
 	return elgg.action('groups/join', {
 		data: {
 			group_guid: this.guid,
 			user_guid: user_guid
+		},
+		success: function() {
+			//TODO what happens on success?
 		}
 	});
 };
 
 /**
- * Make the logged in user leave the group
+ * Make the specified user leave the group
+ * @param {number} user_guid
+ * @return {XMLHttpRequest}
  */
-elgg.ElggGroup.prototype.leave = function() {
-	//TODO Implement
-	throw new Error("Not yet implemented.");
+elgg.ElggGroup.prototype.leave = function(user_guid) {
+	return elgg.action('groups/leave', {
+		data: {
+			group_guid: this.guid,
+			user_guid: user_guid
+		},
+		success: function() {
+			//TODO what happens on success?
+		}
+	});
 };

@@ -9,23 +9,71 @@
  */
 var elgg = elgg || {};
 
-elgg.ACCESS_PUBLIC = 2;
-elgg.ACCESS_LOGGED_IN = 1;
-elgg.ACCESS_PRIVATE = 0;
-elgg.ACCESS_DEFAULT = -1;
-elgg.ACCESS_FRIENDS = -2;
+/**
+ * Initialise Elgg
+ * @return void
+ */
+elgg.init = function() {
+	//if the user clicks a system message, make it disappear
+	$('#elgg_system_messages').delegate('.elgg_system_message', 'click', function() {
+		$(this).stop().fadeOut('fast');
+	});
+};
 
-elgg.ENTITIES_ANY_VALUE = null;
-elgg.ENTITIES_NO_VALUE = 0;
-
-elgg.cache = {};
+//Initialise Elgg
+$(function() {
+	elgg.init();
+});
 
 /**
- * Hold configuration data here
+ * Pointer to the global context
+ * {@see elgg.require} and {@see elgg.provide}
  */
-elgg.config = {};
-elgg.config.wwwroot;
-elgg.config.lastcache;
+elgg.global = this;
+
+/**
+ * @param {String} pkg The required package (e.g., elgg.package)
+ */
+elgg.require = function(pkg) {
+	var parts = pkg.split('.'),
+		cur = elgg.global,
+		part;
+
+	for (var i = 0; i < parts.length; i++) {
+		part = parts[i];
+		cur = cur[part];
+		if(typeof cur == 'undefined') {
+			throw new Error("Missing package: " + pkg);
+		}
+	}
+};
+
+/**
+ * Generate the skeleton for pkg.
+ * 
+ * <pre>
+ * elgg.provide('elgg.package.subpackage');
+ * </pre>
+ * 
+ * is equivalent to
+ * 
+ * <pre>
+ * elgg = elgg || {};
+ * elgg.package = elgg.package || {};
+ * elgg.package.subpackage = elgg.package.subpackage || {};
+ * </pre>
+ */
+elgg.provide = function(pkg) {
+	var parts = pkg.split('.'),
+		cur = elgg.global,
+		part;
+	
+	for (var i = 0; i < parts.length; i++) {
+		part = parts[i];
+		cur[part] = cur[part] || {};
+		cur = cur[part];
+	}
+};
 
 /**
  * Inherit the prototype methods from one constructor into another.
@@ -81,43 +129,14 @@ elgg.implement = function(obj, iface) {
 	}
 };
 
-//object for holding security-related methods/data
-elgg.security = {};
-elgg.security.token = {};
-elgg.security.interval = 5 * 60 * 1000;
+elgg.ACCESS_PUBLIC = 2;
+elgg.ACCESS_LOGGED_IN = 1;
+elgg.ACCESS_PRIVATE = 0;
+elgg.ACCESS_DEFAULT = -1;
+elgg.ACCESS_FRIENDS = -2;
 
-/**
- * Security tokens time out, so lets refresh those every so often
- */
-elgg.security.refreshtoken = function() {
-	elgg.action('ajax/securitytoken', {
-		success: function(json) {
-			//update the convenience object
-			elgg.security.token = json;
-			
-			//also update all forms
-			$('[name=__elgg_ts]').val(json.__elgg_ts);
-			$('[name=__elgg_token]').val(json.__elgg_token);
-		}
-	});
-};
-
-/**
- * Add elgg action tokens to an object
- * 
- * @param {Object} data The data object to add the action tokens to
- * @return {Object} The new data object including action tokens
- * @private
- */
-elgg.security.addToken = function(data) {
-	if (typeof data == 'object') {
-		$.extend(data, elgg.security.token);
-	} else if (typeof data == 'string') {
-		throw new TypeError("Function elgg.security.addToken does not accept string input yet");
-	}
-	
-	return data;
-};
+elgg.ENTITIES_ANY_VALUE = null;
+elgg.ENTITIES_NO_VALUE = 0;
 
 /**
  * Prepend elgg.config.wwwroot to a url if the url doesn't already have it.
@@ -185,35 +204,18 @@ elgg.forward = function(url) {
 	location.href = elgg.extendUrl(url);
 };
 
+elgg.cache = {};
+
+/**
+ * Hold configuration data here
+ */
+elgg.config = {};
+elgg.config.wwwroot;
+elgg.config.lastcache;
+
 /**
  * Allow plugins to extend it
  */
 elgg.mod = {};
 
 elgg.plugins = {};
-
-/**
- * Initialise Elgg
- * @return void
- */
-elgg.init = function() {
-	elgg.load_translations();
-	
-	//refresh security token every 5 minutes
-	setInterval(elgg.security.refreshtoken, elgg.security.interval);
-	
-	//if the user clicks a system message, make it disappear
-	$('#elgg_system_messages').delegate('.elgg_system_message', 'click', function() {
-		$(this).stop().fadeOut('fast');
-	});
-	
-	for (var i in elgg.plugins) {
-		var plugin = elgg.plugins[i];
-		if (typeof plugin.init == 'function') {
-			plugin.init();
-		}
-	}
-};
-
-//Initialise Elgg
-$(elgg.init);

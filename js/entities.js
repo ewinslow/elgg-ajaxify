@@ -1,4 +1,7 @@
-elgg.cache.entities = {};
+/**
+ * 
+ */
+elgg.provide('elgg.cache.entities');
 
 /**
  * Create a new ElggEntity

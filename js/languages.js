@@ -1,9 +1,28 @@
 /**
- * Provides javascript functionality related to languages
+ * Provides language-related functionality
  */
+elgg.provide('elgg.config.translations');
 
 elgg.config.language = 'en';
-elgg.config.translations = {};
+
+$(function() {
+	elgg.config.translations.init();
+});
+
+elgg.config.translations.init = function() {
+	elgg.getJSON({
+		url: '_css/js.php',
+		data: {
+			js: 'translations',
+			language: elgg.get_language(),
+			lastcache: elgg.config.lastcache
+		},
+		success: function(json) {
+			var language = elgg.get_language();
+			elgg.config.translations[language] = json;
+		}
+	});
+};
 
 /**
  * Get the current language
@@ -30,16 +49,4 @@ elgg.echo = function(key, language) {
 	language = language || elgg.get_language();
 	var translations = elgg.config.translations[language];
 	return (translations && translations[key]) ? translations[key] : key;
-};
-
-/**
- * Convenience function for lazy loading the translations
- */
-elgg.load_translations = function() {
-	elgg.api('translations.get', {
-		success: function(json) {
-			var language = elgg.get_language();
-			elgg.config.translations[language] = json.result;
-		}
-	});
 };
