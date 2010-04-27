@@ -24,6 +24,12 @@ ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsOptions = function() {
 		result = elgg.ajax.handleOptions(options);
 	
 	assertEquals(options, result);
+	
+	function func() {}
+	options = {success: func};
+	result = elgg.ajax.handleOptions(options);
+	
+	assertEquals(options, result);	
 };
 
 ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsUrlThenDataOnly = function() {

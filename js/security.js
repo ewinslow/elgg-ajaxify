@@ -21,6 +21,13 @@ elgg.security.setToken = function(json) {
 	//also update all forms
 	$('[name=__elgg_ts]').val(json.__elgg_ts);
 	$('[name=__elgg_token]').val(json.__elgg_token);
+	
+	//also update all links
+	$('[href]').each(function() {
+		this.href = this.href
+			.replace(/__elgg_ts=\d*/, '__elgg_ts=' + json.__elgg_ts)
+			.replace(/__elgg_token=[0-9a-f]*/, '__elgg_token=' + json.__elgg_token);
+	});
 };
 
 /**

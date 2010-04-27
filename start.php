@@ -16,6 +16,8 @@ function ajaxify_init()
 	register_page_handler('ajaxify', 'translations');
 	
 	register_plugin_hook('forward', 'system', 'ajaxify_forward_hook');
+	
+	register_plugin_hook('display', 'view', 'ajaxify_minify');
 }
 
 

@@ -47,7 +47,7 @@ elgg.ajax.handleOptions = function(url, options) {
 	} else {
 		for (var member in options) {
 			//elgg.ajax('example/file.php', {callback:function(){...}});
-			if(typeof member == 'function') {
+			if(typeof options[member] == 'function') {
 				data_only = false;
 			}
 		}
