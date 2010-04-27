@@ -11,7 +11,7 @@ var elgg = elgg || {};
 
 /**
  * Initialise Elgg
- * @return void
+ * @todo Should we init other things here too, or make them initialise themselves?
  */
 elgg.init = function() {
 	//if the user clicks a system message, make it disappear
@@ -129,14 +129,14 @@ elgg.implement = function(obj, iface) {
 	}
 };
 
-elgg.ACCESS_PUBLIC = 2;
-elgg.ACCESS_LOGGED_IN = 1;
-elgg.ACCESS_PRIVATE = 0;
-elgg.ACCESS_DEFAULT = -1;
-elgg.ACCESS_FRIENDS = -2;
+/** @const */ elgg.ACCESS_PUBLIC = 2;
+/** @const */ elgg.ACCESS_LOGGED_IN = 1;
+/** @const */ elgg.ACCESS_PRIVATE = 0;
+/** @const */ elgg.ACCESS_DEFAULT = -1;
+/** @const */ elgg.ACCESS_FRIENDS = -2;
 
-elgg.ENTITIES_ANY_VALUE = null;
-elgg.ENTITIES_NO_VALUE = 0;
+/** @const */ elgg.ENTITIES_ANY_VALUE = null;
+/** @const */ elgg.ENTITIES_NO_VALUE = 0;
 
 /**
  * Prepend elgg.config.wwwroot to a url if the url doesn't already have it.
@@ -157,9 +157,9 @@ elgg.extendUrl = function(url) {
 /**
  * Displays system messages via javascript rather than php.
  * 
- * @param {string} msg The message we want to display
- * @param {number} delay The amount of time to display the message in milliseconds
- * @param {string} type The type of message (typically 'error' or 'message')
+ * @param {String} msg The message we want to display
+ * @param {Number} delay The amount of time to display the message in milliseconds
+ * @param {String} type The type of message (typically 'error' or 'message')
  * @private
  */
 elgg.system_messages = function(msg, delay, type) {
@@ -179,7 +179,7 @@ elgg.system_messages = function(msg, delay, type) {
 /**
  * Wrapper function for system_messages. Specifies "messages" as the type of message
  * @param {String} msg The message to display
- * @param {number} delay How long to display the message (milliseconds)
+ * @param {Number} delay How long to display the message (milliseconds)
  */
 elgg.system_message = function(msg, delay) {
 	elgg.system_messages(msg, delay, "message");
@@ -188,7 +188,7 @@ elgg.system_message = function(msg, delay) {
 /**
  * Wrapper function for system_messages.  Specifies "errors" as the type of message
  * @param {String} error The error message to display
- * @param {number} delay How long to dispaly the error message (milliseconds)
+ * @param {Number} delay How long to dispaly the error message (milliseconds)
  */
 elgg.register_error = function(error, delay) {
 	elgg.system_messages(error, delay, "error");
@@ -204,18 +204,19 @@ elgg.forward = function(url) {
 	location.href = elgg.extendUrl(url);
 };
 
-elgg.cache = {};
+/**
+ * Cache stuff here
+ */
+elgg.provide('elgg.cache');
 
 /**
  * Hold configuration data here
  */
-elgg.config = {};
-elgg.config.wwwroot;
-elgg.config.lastcache;
+elgg.provide('elgg.config');
 
 /**
  * Allow plugins to extend it
+ * @todo not sure which to use
  */
-elgg.mod = {};
-
-elgg.plugins = {};
+elgg.provide('elgg.mod');
+elgg.provide('elgg.plugins');
