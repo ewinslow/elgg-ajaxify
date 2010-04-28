@@ -1,5 +1,9 @@
 elgg.provide('elgg.ui.plugins');
 
+$(function() {
+	elgg.ui.plugins.init();
+});
+
 elgg.ui.plugins.init = function() {
 	$('a.pluginsettings_link').click(elgg.ui.plugins.toggleSettings);
 	$('a.manifest_details').click(elgg.ui.plugins.toggleDetails);

@@ -1,5 +1,9 @@
 elgg.provide('elgg.ui.widgets');
 
+$(function() {
+	elgg.ui.widgets.init();
+});
+
 elgg.ui.widgets.init = function() {
 	// COLLAPSABLE WIDGETS (on Dashboard & Profile pages)
 	$('a.toggle_box_contents').live('click', elgg.ui.widgets.toggleContent);

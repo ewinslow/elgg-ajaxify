@@ -36,8 +36,8 @@ $lib_dir = "{$vars['config']->pluginspath}ajaxify/js/";
 foreach($lib_files as $file) {
 	$file = $lib_dir . $file;
 	elgg_log("Loading $file...");
-	if (!include_once($file)) {
-		echo "throw new Error('Could not load $file');";
+	if (!include($file)) {
+		throw new InstallationException("Could not load file $file...");
 	}
 }
 
