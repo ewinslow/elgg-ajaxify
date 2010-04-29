@@ -111,7 +111,7 @@ elgg.get_entity = function(guid) {
  * @return false Always make this the last action
  */
 elgg.delete_entity = function(guid) {
-	if (!confirm(elgg.echo('delete:confirm'))) {
+	if (!confirm(elgg.echo('deleteconfirm'))) {
 		return false;
 	}
 	
@@ -119,19 +119,21 @@ elgg.delete_entity = function(guid) {
 	
 	$entity.slideUp();
 	
-	elgg.ajax({
-	    type: 'post',
-	    url: elgg.config.wwwroot + 'action/ajax/entity/delete',
+	elgg.action('entity/delete', {
 	    data: {
 		    guid: guid
 		},
-		action: true,
-		success: function(data) {
-			elgg.system_message(data);
-		},
-		error: function(xhr) { // oops
-			$entity.slideDown();
-			elgg.register_error(xhr.responseText);
+		success: function(json) {
+			var msgs = json.system_messages;
+			if (msgs.errors) {
+				for (var i in msgs.errors) {
+					elgg.register_error(msgs.errors[i]);
+				}
+			} else {
+				for(var i in msgs.messages) {
+					elgg.system_message(msgs.messages[i]);
+				}
+			}
 		}
 	});
 
