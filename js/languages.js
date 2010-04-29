@@ -26,7 +26,8 @@ elgg.config.translations.load = function(language) {
 		data: {
 			js: 'translations',
 			language: lang,
-			lastcache: elgg.config.lastcache
+			lastcache: elgg.config.lastcache,
+			viewtype: 'default'
 		},
 		success: function(json) {
 			elgg.config.translations[lang] = json;
