@@ -204,7 +204,7 @@ elgg.api = function(method, options) {
 
 /**
  * @param {string} selector a jQuery selector
- * @param {function} complete A function to execute when the refresh is done
+ * @param {Function} complete A function to execute when the refresh is done
  * @return {XMLHttpRequest}
  */
 elgg.refresh = function(selector, complete) {
@@ -214,10 +214,11 @@ elgg.refresh = function(selector, complete) {
 /**
  * @param {string} selector a jQuery selector (usually an #id)
  * @param {number} interval The refresh interval in seconds
+ * @param {Function} complete A function to execute when the refresh is done
  * @return {number} The interval identifier
  */
-elgg.feed = function(selector, interval) {
+elgg.feed = function(selector, interval, complete) {
 	return setInterval(function() {
-		elgg.refresh(selector);
+		elgg.refresh(selector, complete);
 	}, interval);
 };

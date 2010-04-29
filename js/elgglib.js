@@ -172,7 +172,7 @@ elgg.system_messages = function(msg, delay, type) {
 	$("<div/>", {
 		'class': 'elgg_system_message ' + type,
 		'html': msg
-	}).appendTo('#elgg_system_messages').show()
+	}).prependTo('#elgg_system_messages').show()
 	.animate({opacity:'1.0'},delay).fadeOut('slow');
 };
 
