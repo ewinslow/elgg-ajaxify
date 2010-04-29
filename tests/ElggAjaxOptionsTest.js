@@ -29,7 +29,7 @@ ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsOptions = function() {
 	options = {success: func};
 	result = elgg.ajax.handleOptions(options);
 	
-	assertEquals(options, result);	
+	assertEquals(options, result);
 };
 
 ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsUrlThenDataOnly = function() {
@@ -39,6 +39,15 @@ ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsUrlThenDataOnly = function
 	
 	assertEquals(url, result.url);
 	assertEquals(options, result.data);
+};
+
+ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsUrlThenSuccessOnly = function() {
+	var url = 'url',
+	success = function() {},
+	result = elgg.ajax.handleOptions(url, success);
+	
+	assertEquals(url, result.url);
+	assertEquals(success, result.success);
 };
 
 ElggAjaxOptionsTest.prototype.testHandleOptionsAcceptsUrlThenOptions = function() {
