@@ -204,10 +204,11 @@ elgg.api = function(method, options) {
 
 /**
  * @param {string} selector a jQuery selector
+ * @param {function} complete A function to execute when the refresh is done
  * @return {XMLHttpRequest}
  */
-elgg.refresh = function(selector) {
-	return $(selector).load(location.href + ' ' + selector + ' > *');
+elgg.refresh = function(selector, complete) {
+	return $(selector).load(location.href + ' ' + selector + ' > *', complete);
 };
 
 /**
