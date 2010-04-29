@@ -201,3 +201,22 @@ elgg.api = function(method, options) {
 	
 	return elgg.ajax(options);
 };
+
+/**
+ * @param {string} selector a jQuery selector
+ * @return {XMLHttpRequest}
+ */
+elgg.refresh = function(selector) {
+	return $(selector).load(location.href + ' ' + selector + ' > *');
+};
+
+/**
+ * @param {string} selector a jQuery selector (usually an #id)
+ * @param {number} interval The refresh interval in seconds
+ * @return {number} The interval identifier
+ */
+elgg.feed = function(selector, interval) {
+	return setInterval(function() {
+		elgg.refresh(selector);
+	}, interval);
+};
