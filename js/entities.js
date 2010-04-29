@@ -124,15 +124,10 @@ elgg.delete_entity = function(guid) {
 		    guid: guid
 		},
 		success: function(json) {
-			var msgs = json.system_messages;
-			if (msgs.errors) {
-				for (var i in msgs.errors) {
-					elgg.register_error(msgs.errors[i]);
-				}
+			if (json.status == elgg.ajax.SUCCESS) {
+				elgg.system_message(json.system_messages.messages[0]);
 			} else {
-				for(var i in msgs.messages) {
-					elgg.system_message(msgs.messages[i]);
-				}
+				elgg.register_error(json.system_messages.errors[0]);
 			}
 		}
 	});

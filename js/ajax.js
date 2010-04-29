@@ -9,6 +9,8 @@ elgg.provide('elgg.ajax');
  * Wrapper function for jQuery.ajax which ensures that the url being called
  * is relative to the elgg site root.
  * 
+ * You would most likely use elgg.get or elgg.post, rather than this function
+ * 
  * @param {string} url Optionally specify the url as the first argument
  * @param {Object} options Optional. {@see jQuery#ajax}
  * @return {XmlHttpRequest}

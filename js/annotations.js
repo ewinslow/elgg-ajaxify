@@ -18,7 +18,11 @@ elgg.delete_annotation = function(id) {
 			annotation_id: id
 		},
 		success: function(data) {
-			elgg.system_message(data);
+			if (data.status == elgg.ajax.SUCCESS) {
+				elgg.system_message(data.system_messages.messages[0]);
+			} else {
+				elgg.register_error(data.system_messages.errors[0]);
+			}
 		},
 		error: function(xhr) { // oops
 			$annotation.slideDown();
