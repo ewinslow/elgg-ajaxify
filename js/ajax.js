@@ -52,6 +52,12 @@ elgg.ajax.handleOptions = function(url, options) {
 	
 	var data_only = true;
 
+	//elgg.ajax('example/file.php', function() {...});
+	if (typeof options == 'function') {
+		data_only = false;
+		options = {success: options};
+	}
+	
 	//elgg.ajax('example/file.php', {data:{...}});
 	if(options.data) {
 		data_only = false;
@@ -219,6 +225,7 @@ elgg.api = function(method, options) {
  * @return {XMLHttpRequest}
  */
 elgg.refresh = function(selector, complete) {
+	$(selector).html('<div align="center" class="ajax_loader"></div>');
 	return $(selector).load(location.href + ' ' + selector + ' > *', complete);
 };
 
