@@ -19,6 +19,15 @@ elgg.ajax = function(url, options) {
 	options.url = elgg.extendUrl(options.url);
 	return $.ajax(options);
 };
+/**
+ * @const
+ */
+elgg.ajax.SUCCESS = 0;
+
+/**
+ * @const
+ */
+elgg.ajax.ERROR = -1;
 
 /**
  * Handle optional arguments and return the resulting options object
