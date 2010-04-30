@@ -85,10 +85,10 @@ elgg.get_entity = function(guid) {
 		
 		
 	var found = false;
-	$.getJSON(elgg.config.wwwroot + 'export/json/' + guid, function(result) {
+	elgg.getJSON('export/json/' + guid, function(result) {
 		if(result.exceptions) {
 			for (var e in result.exceptions) {
-				console.log(e);
+				console.log(result.exceptions[e]);
 			}
 		} else {
 			found = true;
