@@ -3,9 +3,11 @@ ElggLanguagesTest = TestCase("ElggLanguagesTest");
 ElggLanguagesTest.prototype.setUp = function() {
 	this.ajax = $.ajax;
 	
-	//Immediately call the success handler instead of sending ajax request
+	//Immediately execute some dummy "returned" javascript instead of sending
+	//an actual ajax request
 	$.ajax = function(settings) {
-		settings.success({'language':settings.data.language});
+		var lang = settings.data.js.split('/')[1];
+		elgg.config.translations[lang] = {'language':lang};
 	};
 };
 

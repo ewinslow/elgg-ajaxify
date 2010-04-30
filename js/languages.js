@@ -22,15 +22,12 @@ elgg.config.translations.init = function() {
  */
 elgg.config.translations.load = function(language) {
 	var lang = language || elgg.get_language();
-	return elgg.getJSON('_css/js.php', {
+	return elgg.get('_css/js.php', {
+		dataType: 'script',
 		data: {
-			js: 'translations',
-			language: lang,
+			js: 'languages/' + lang,
 			lastcache: elgg.config.lastcache,
 			viewtype: 'default'
-		},
-		success: function(json) {
-			elgg.config.translations[lang] = json;
 		}
 	});
 };

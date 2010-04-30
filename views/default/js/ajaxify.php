@@ -25,20 +25,16 @@ $lib_files = array(
 	'annotations.js', 
 
 	//ui
-	'ui.js',
-	'ui.widgets.js',
-	'ui.plugins.js',
+//	'ui.js',
+//	'ui.widgets.js',
+//	'ui.plugins.js',
 );
 
 $lib_dir = "{$vars['config']->pluginspath}ajaxify/js/";
 
 // Include them
 foreach($lib_files as $file) {
-	$file = $lib_dir . $file;
-	elgg_log("Loading $file...");
-	if (!include($file)) {
-		throw new InstallationException("Could not load file $file...");
-	}
+	include($lib_dir . $file);
 }
 
 /**
