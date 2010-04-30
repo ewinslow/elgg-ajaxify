@@ -15,8 +15,6 @@ function ajaxify_init()
 	
 	register_action('entity/delete', false, $CONFIG->pluginspath.'ajaxify/actions/entities/delete.php');
 	
-	register_page_handler('ajaxify', 'translations');
-	
 	register_plugin_hook('forward', 'system', 'ajaxify_forward_hook');
 }
 
