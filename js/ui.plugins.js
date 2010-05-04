@@ -8,9 +8,11 @@ elgg.ui.plugins.init = function() {
 //	$('a.pluginsettings_link').click(elgg.ui.plugins.toggleSettings);
 //	$('a.manifest_details').click(elgg.ui.plugins.toggleDetails);
 	
-	$('.admin_plugin_enable_disable a').click(function() {
-		var $plugin = $(this).closest(".plugin_details").toggleClass('active').toggleClass('not-active');
-		elgg.post(this.href, {
+	//Ajaxify plugin enable/disable
+	$('.plugin_details').bind('toggle.elgg', function() {
+		var button = $(this).find('.admin_plugin_enable_disable a')[0];
+		
+		elgg.post(button.href, {
 			dataType: 'json',
 			success: function(data) {
 				if (data.status) {
@@ -18,22 +20,32 @@ elgg.ui.plugins.init = function() {
 				} else {
 					//swallow system messages
 				}
-
 			}
 		});
 		
-		if($plugin.hasClass('active')) {
-			$(this).text(elgg.echo('disable'));
-			this.href = this.href.replace(/enable/, 'disable');
-		} else if($plugin.hasClass('not-active')) {
-			$(this).text(elgg.echo('enable'));
-			this.href = this.href.replace(/disable/, 'enable');
+		$(this).toggleClass('active').toggleClass('not-active');
+		if($(this).hasClass('active')) {
+			$(button).text(elgg.echo('enable'));
+			button.href = button.href.replace(/disable/, 'enable');
+		} else if($(this).hasClass('not-active')) {
+			$(button).text(elgg.echo('disable'));
+			button.href = button.href.replace(/enable/, 'disable');
 		}
 		
 		return false;
 	});
 	
-
+	$('.admin_plugin_enable_disable a').click(function() {
+		return $(this).closest(".plugin_details").trigger('toggle.elgg');
+	});
+	
+	//Ajaxify plugin reordering -- still have to click save in order to save ordering
+	$('#two_column_left_sidebar_maincontent').sortable({
+		axis: 'y',
+		items: '> .plugin_details',
+		scroll: false
+	});
+	
 };
 
 // toggle plugin's settings and more info on admin tools admin

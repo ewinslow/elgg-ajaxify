@@ -1,0 +1,36 @@
+/***************************************
+	ADMIN AREA - PLUGIN SETTINGS
+****************************************/
+.plugin_details {
+	margin:0 10px 5px 10px;
+	padding:0 7px 4px 10px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.admin_plugin_reorder {
+	display: none;
+}
+
+.plugin_details > h3, 
+.plugin_details > p,
+.plugin_description {
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+.admin_plugin_enable_disable {
+	height:100%;
+	margin: 3px 0px 0px;
+}
+
+.plugin_details > .drag {
+	background: url('<?php echo $vars['url']; ?>_graphics/icon_customise_drag.gif') no-repeat top left;
+	cursor: move;
+	height:16px;
+	width: 16px;
+	display: inline-block;
+	margin: 3px 3px 0px 0px;
+}
