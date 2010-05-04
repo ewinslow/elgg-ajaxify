@@ -16,7 +16,9 @@ elgg.ui.init = function () {
 	});
 };
 
-$(elgg.ui.init);
+$(function() {
+	elgg.ui.init();
+});
 
 // reusable generic hidden panel
 elgg.ui.toggleCollapsibleBox = function () {
