@@ -16,11 +16,12 @@ $token = generate_action_token($ts);
 ?>
 
 <form action="/action/ajaxify/plugins/save" method="post">
+	<?php echo elgg_view('input/securitytoken'); ?>
 	<div class="contentWrapper">
 		<span class="contentIntro">
-			<a class="enableallplugins" href="javascript:void(0);"><?php echo elgg_echo('enableall'); ?></a>  
-			<a class="disableallplugins" href="javascript:void(0);"><?php echo elgg_echo('disableall'); ?></a>
 			<?php 
+				echo elgg_view('input/button', array('value' => elgg_echo('enableall')));
+				echo elgg_view('input/button', array('value' => elgg_echo('disableall')));
 				echo elgg_view('input/submit', array('value' => elgg_echo('save')));
 				echo elgg_view('output/longtext', array('value' => elgg_echo('admin:plugins:description'))); 
 			?>
