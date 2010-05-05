@@ -27,7 +27,7 @@ $lib_files = array(
 	//ui
 //	'ui.js',
 //	'ui.widgets.js',
-	'ui.plugins.js',
+	'plugins.js',
 );
 
 $lib_dir = "{$vars['config']->pluginspath}ajaxify/js/";
