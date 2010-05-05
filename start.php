@@ -27,7 +27,7 @@ function ajaxify_init()
  * Checks whether the request was requested via ajax
  */
 function ajaxify_is_xhr() {
-	return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) 
+	return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
 		&& strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'; 
 }
 
