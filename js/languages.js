@@ -22,14 +22,7 @@ elgg.config.translations.init = function() {
  */
 elgg.config.translations.load = function(language) {
 	var lang = language || elgg.get_language();
-	return elgg.get('_css/js.php', {
-		dataType: 'script',
-		data: {
-			js: 'languages/' + lang,
-			lastcache: elgg.config.lastcache,
-			viewtype: 'default'
-		}
-	});
+	elgg.get('_css/languages/' + lang + '.default.' + elgg.config.lastcache + '.js');
 };
 
 /**
