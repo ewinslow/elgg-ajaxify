@@ -13,6 +13,7 @@ function ajaxify_init()
 
     if (get_context() == 'admin') {
     	elgg_extend_view('metatags', 'links/admin/plugins');
+    	elgg_extend_view('metatags', 'scripts/admin/plugins');
     }
     
 	register_action('ajax/securitytoken', false, $CONFIG->pluginspath."ajaxify/actions/ajax/securitytoken.php" );
