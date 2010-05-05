@@ -10,15 +10,10 @@ function ajaxify_init()
 {
 	global $CONFIG;
     elgg_extend_view('metatags', 'scripts/ajaxify');
-
-    if (get_context() == 'admin') {
-    	elgg_extend_view('metatags', 'links/admin/plugins');
-    	elgg_extend_view('metatags', 'scripts/admin/plugins');
-    }
     
 	register_action('ajax/securitytoken', false, $CONFIG->pluginspath."ajaxify/actions/ajax/securitytoken.php" );
-	
 	register_action('entity/delete', false, $CONFIG->pluginspath.'ajaxify/actions/entities/delete.php');
+	
 	
 	elgg_view_register_simplecache('js/ajaxify');
 	elgg_view_register_simplecache('js/languages/en');
