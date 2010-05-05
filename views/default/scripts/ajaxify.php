@@ -1,7 +1,10 @@
 <?php 
+/**
+ * 
+ */
 
+echo elgg_view('script', array('js' => 'ajaxify'));     
 ?>
-<script type="text/javascript" src="<?php echo "{$vars['url']}_css/js.php?lastcache={$vars['config']->lastcache}&amp;js=ajaxify&amp;viewtype={$vars['view']}"; ?>"></script>
 <script type="text/javascript">
 /**
  * Don't want to cache these -- they could change for every request

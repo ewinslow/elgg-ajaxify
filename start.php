@@ -9,7 +9,7 @@
 function ajaxify_init()
 {
 	global $CONFIG;
-    elgg_extend_view('metatags', 'ajaxify/metatags');
+    elgg_extend_view('metatags', 'scripts/ajaxify');
     elgg_extend_view('css', 'ajaxify/admin/plugins/css');
     
 	register_action('ajax/securitytoken', false, $CONFIG->pluginspath."ajaxify/actions/ajax/securitytoken.php" );
