@@ -13,16 +13,13 @@ coding conventions.
 jsTestDriver.conf
 =================
 I use jsTestDriver for testing (http://code.google.com/p/js-test-driver/). 
-jsTestDriver.conf is my configuration file for ajaxify.  If you're working in 
-Eclipse, your project root is probably your elgg root.  You should copy this
-file to that directory so that you can set up the Eclipse plugin. Instructions
-on other details about how to set jsTestDriver, including the Eclipse plugin,
-can be found at the website above.
+jsTestDriver.conf is the configuration file for running ajaxify.  Unless you
+are helping to develop ajaxify, you can safely ignore this file.
 
 javascript translations (elgg.echo)
 ===================================
 In order to expose language translations other than English to javascript, you
-have to do two things (substitute your language instead of en):
+have to do two simple things (substitute your language instead of en):
 
 1) create a view js/languages/en with the following content:
 
