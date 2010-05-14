@@ -15,7 +15,7 @@ var elgg = elgg || {};
  */
 elgg.init = function() {
 	//if the user clicks a system message, make it disappear
-	$('#elgg_system_messages').delegate('.elgg_system_message', 'click', function() {
+	$('.elgg_system_message').live('click', function() {
 		$(this).stop().fadeOut('fast');
 	});
 };
