@@ -8,16 +8,15 @@
  */
 function ajaxify_init()
 {
-	global $CONFIG;
     elgg_extend_view('metatags', 'scripts/ajaxify');
     
-	register_action('ajax/securitytoken', false, $CONFIG->pluginspath."ajaxify/actions/ajax/securitytoken.php" );
-	register_action('entity/delete', false, $CONFIG->pluginspath.'ajaxify/actions/entities/delete.php');
-	
+	register_action('ajax/securitytoken', false, dirname(__FILE__)."/actions/ajax/securitytoken.php" );
+	register_action('entity/delete', false, dirname(__FILE__)."/actions/entities/delete.php");
 	
 	elgg_view_register_simplecache('js/ajaxify');
 	elgg_view_register_simplecache('js/languages/en');
 		
+	register_plugin_hook('action', 'all', 'ajaxify_action_hook');
 	register_plugin_hook('forward', 'system', 'ajaxify_forward_hook');
 }
 
@@ -50,10 +49,13 @@ function ajaxify_is_xhr() {
  */
 function ajaxify_forward_hook($hook, $type, $location, $params)
 {
-	if(ajaxify_is_xhr()) {
+	if (ajaxify_is_xhr()) {
 		header("Content-type: application/json");
 		
 		$params['system_messages'] = system_messages(NULL, "");
+		
+		$params['output'] = ob_get_clean();
+		
 		if(isset($params['system_messages']['errors'])) {
 			$params['status'] = -1;
 		} else {
@@ -61,9 +63,16 @@ function ajaxify_forward_hook($hook, $type, $location, $params)
 		}
 		
 		echo json_encode($params);
-		
-		return '';
+		exit;
 	}
+}
+
+/**
+ * Whenever we call an action, we want to be able to get data back,
+ * so we'll buffer all the output and include in the returning json.
+ */
+function ajaxify_action_hook() {
+	ob_start();
 }
 
 
