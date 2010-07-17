@@ -163,6 +163,10 @@ elgg.extendUrl = function(url) {
  * @private
  */
 elgg.system_messages = function(msgs, delay, type) {
+	if (msgs == undefined) {
+		return;
+	}
+	
 	//validate delay.  Must be a positive integer. 
 	delay = parseInt(delay);
 	if (isNaN(delay) || delay <= 0) {
@@ -199,8 +203,8 @@ elgg.system_messages = function(msgs, delay, type) {
  * @param {String} msg The message to display
  * @param {Number} delay How long to display the message (milliseconds)
  */
-elgg.system_message = function(msg, delay) {
-	elgg.system_messages(msg, delay, "message");
+elgg.system_message = function(msgs, delay) {
+	elgg.system_messages(msgs, delay, "message");
 };
 
 /**
@@ -208,8 +212,8 @@ elgg.system_message = function(msg, delay) {
  * @param {String} error The error message to display
  * @param {Number} delay How long to dispaly the error message (milliseconds)
  */
-elgg.register_error = function(error, delay) {
-	elgg.system_messages(error, delay, "error");
+elgg.register_error = function(errors, delay) {
+	elgg.system_messages(errors, delay, "error");
 };
 
 /**
@@ -234,7 +238,7 @@ elgg.provide('elgg.config');
 
 /**
  * Allow plugins to extend it
- * @todo not sure which to use
+ * @todo not sure which to use, or whether to use either one
  */
 elgg.provide('elgg.mod');
 elgg.provide('elgg.plugins');
