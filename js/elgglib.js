@@ -157,23 +157,41 @@ elgg.extendUrl = function(url) {
 /**
  * Displays system messages via javascript rather than php.
  * 
- * @param {String} msg The message we want to display
- * @param {Number} delay The amount of time to display the message in milliseconds
+ * @param {String} msgs The message we want to display
+ * @param {Number} delay The amount of time to display the message in milliseconds. Defaults to 6 seconds.
  * @param {String} type The type of message (typically 'error' or 'message')
  * @private
  */
-elgg.system_messages = function(msg, delay, type) {
-	//validate delay.  Must be a positive integer. Default to 3 seconds.
+elgg.system_messages = function(msgs, delay, type) {
+	//validate delay.  Must be a positive integer. 
 	delay = parseInt(delay);
 	if (isNaN(delay) || delay <= 0) {
-		delay = 3000;
+		delay = 6000;
 	}
 	
-	$("<div/>", {
-		'class': 'elgg_system_message ' + type,
-		'html': msg
-	}).prependTo('#elgg_system_messages').show()
-	.animate({opacity:'1.0'},delay).fadeOut('slow');
+	var messages_class = 'messages';
+	if (type == 'error') {
+		messages_class = 'messages_error';
+	}
+
+	//Handle non-arrays
+	if (msgs.constructor.toString().indexOf("Array") == -1) {
+		msgs = [msgs];
+	}
+	
+	var messages_html = '<div class="' + messages_class + '">' 
+		+ '<span class="closeMessages">'
+			+ '<a href="#">' 
+				+ elgg.echo('systemmessages:dismiss')
+			+ '</a>'
+		+ '</span>'
+		+ '<p>' + msgs.join('</p><p>') + '</p>'
+	+ '</div>';
+	
+	$(messages_html).insertAfter('#layout_header').click(function () {
+		$(this).stop().fadeOut('slow');
+		return false;
+	}).show().animate({opacity:'1.0'},delay).fadeOut('slow');
 };
 
 /**
