@@ -1,34 +1,15 @@
 /**
  * Deletes an annotation
  * 
- * @param id The id of the annotation to delete
- * @return false Forces this to be the last action that occurs.
+ * @param id The annotation's id
+ * @return {XMLHttpRequest}
  */
 elgg.delete_annotation = function(id) {
-	if (!confirm(elgg.echo('delete:confirm'))) {
+	if (id < 1 || !confirm(elgg.echo('delete:confirm'))) {
 		return false;
 	}
 	
-	$annotation = $('.annotation.editable[data-id='+id+']');
+	$('.annotation[data-id='+id+']').slideUp();
 	
-	$annotation.slideUp();
-	
-	elgg.action('ajax/annotation/delete', {
-		data: {
-			annotation_id: id
-		},
-		success: function(data) {
-			if (data.status == elgg.ajax.SUCCESS) {
-				elgg.system_message(data.system_messages.messages[0]);
-			} else {
-				elgg.register_error(data.system_messages.errors[0]);
-			}
-		},
-		error: function(xhr) { // oops
-			$annotation.slideDown();
-			elgg.register_error(xhr.responseText);
-		}
-	});
-	
-	return false;
+	return elgg.action('ajax/annotation/delete', {annotation_id: id});
 };

@@ -54,9 +54,16 @@ function ajaxify_forward_hook($hook, $type, $location, $params)
 		
 		$params['system_messages'] = system_messages(NULL, "");
 		
-		$params['output'] = ob_get_clean();
+		$output = ob_get_clean();
 		
-		if(isset($params['system_messages']['errors'])) {
+		//Avoid double-encoding for json output
+		try {
+			$output = json_decode($output);
+		} catch(Exception $e) {}
+		
+		$params['output'] = $output;
+		
+		if (isset($params['system_messages']['errors'])) {
 			$params['status'] = -1;
 		} else {
 			$params['status'] = 0;

@@ -108,29 +108,14 @@ elgg.get_entity = function(guid) {
  * Delete an entity
  * 
  * @param guid The guid of the entity we want to delete
- * @return false Always make this the last action
+ * @return {XMLHttpRequest}
  */
 elgg.delete_entity = function(guid) {
-	if (!confirm(elgg.echo('deleteconfirm'))) {
+	if (guid < 1 || !confirm(elgg.echo('deleteconfirm'))) {
 		return false;
 	}
 	
-	$entity = $('.entity.editable[data-guid='+guid+']');
+	$('.entity[data-guid='+guid+']').slideUp();
 	
-	$entity.slideUp();
-	
-	elgg.action('entity/delete', {
-	    data: {
-		    guid: guid
-		},
-		success: function(json) {
-			if (json.status == elgg.ajax.SUCCESS) {
-				elgg.system_message(json.system_messages.messages[0]);
-			} else {
-				elgg.register_error(json.system_messages.errors[0]);
-			}
-		}
-	});
-
-	return false;
+	return elgg.action('entity/delete', {guid: guid});
 };

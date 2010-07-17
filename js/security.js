@@ -16,17 +16,17 @@ elgg.security.init = function() {
 
 elgg.security.setToken = function(json) {
 	//update the convenience object
-	elgg.security.token = json;
+	var token = elgg.security.token = json.output;
 	
 	//also update all forms
-	$('[name=__elgg_ts]').val(json.__elgg_ts);
-	$('[name=__elgg_token]').val(json.__elgg_token);
+	$('[name=__elgg_ts]').val(token.__elgg_ts);
+	$('[name=__elgg_token]').val(token.__elgg_token);
 	
 	//also update all links
 	$('[href]').each(function() {
 		this.href = this.href
-			.replace(/__elgg_ts=\d*/, '__elgg_ts=' + json.__elgg_ts)
-			.replace(/__elgg_token=[0-9a-f]*/, '__elgg_token=' + json.__elgg_token);
+			.replace(/__elgg_ts=\d*/, '__elgg_ts=' + token.__elgg_ts)
+			.replace(/__elgg_token=[0-9a-f]*/, '__elgg_token=' + token.__elgg_token);
 	});
 };
 
