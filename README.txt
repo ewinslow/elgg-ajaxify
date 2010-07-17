@@ -33,5 +33,5 @@ work just like elgg_echo('your:string') in PHP!
 NOTE: Doing this adds about ~100k to your javascript environment!  We do it this
 way because
 1) This is more cacheable than dynamically including only specific translations.
-2) It's not _every_ translation, otherwise there could be 1M+ of javascript!!
+2) It's not _every language_, otherwise there could easily be 1M+ of javascript!!
 3) It's lazy loaded, so you should see _no_ effect on initial load time!

@@ -2,9 +2,9 @@
 <plugin_manifest>
     <field key="author" value="Evan Winslow" />
     <field key="version" value="0.1" />
-    <field key="description" value="Some ajax libraries for elgg" />
+    <field key="description" value="Provides enhanced ajax support for elgg" />
     <field key="website" value="http://code.google.com/p/elgg-ajaxify" />
-    <field key="copyright" value="(C) Evan Winslow 2009" />
+    <field key="copyright" value="(C) Evan Winslow 2010" />
     <field key="licence" value="GPLv2" />
-    <field key="elgg_version" value="2009030702" />    
+    <field key="elgg_version" value="2010071002" />    
 </plugin_manifest>
