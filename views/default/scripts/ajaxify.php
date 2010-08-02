@@ -9,10 +9,24 @@
 /**
  * Don't want to cache these -- they could change for every request
  */
-elgg.config.lastcache = <?php echo (int)$vars['config']->lastcache.''; ?>;
+elgg.config.lastcache = <?php echo (int)($vars['config']->lastcache); ?>;
 
 elgg.security.token.__elgg_ts = <?php echo $ts = time(); ?>;
 elgg.security.token.__elgg_token = '<?php echo generate_action_token($ts); ?>';
 
-elgg.page_owner_guid = <?php echo page_owner(); ?>;
+<?php
+$page_owner = page_owner_entity();
+
+if ($page_owner instanceof ElggEntity) {
+	$page_owner_json = array();
+	foreach ($page_owner->getExportableValues() as $v) {
+		$page_owner_json[$v] = $page_owner->$v;
+	}
+	
+	$page_owner_json['subtype'] = $page_owner->getSubtype();
+	$page_owner_json['url'] = $page_owner->getURL();
+	
+	echo 'elgg.page_owner =  '.json_encode($page_owner_json); 
+}
+?>;
 </script>

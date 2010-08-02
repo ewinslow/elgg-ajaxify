@@ -37,8 +37,7 @@ foreach($lib_files as $file) {
 }
 
 /**
- * Finally, set some values that are variable between installations
- * but (relatively) constant to an installation (therefore cacheable)
+ * Finally, set some values that are cacheable
  */
 ?>
 
