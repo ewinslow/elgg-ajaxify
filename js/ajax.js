@@ -182,10 +182,12 @@ elgg.action = function(action, options) {
 	//Always display system messages after actions
 	var custom_success = options.success || function(){};
 	options.success = function(json, two, three, four) {
-		elgg.register_error(json.system_messages.errors);
-		elgg.system_message(json.system_messages.messages);
+		if (json.system_messages) {
+			elgg.register_error(json.system_messages.errors);
+			elgg.system_message(json.system_messages.messages);
+		}
 		custom_success(json, two, three, four);
-	}
+	};
 	
 	return elgg.post(options);
 };
