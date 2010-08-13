@@ -9,6 +9,7 @@
 function ajaxify_init()
 {
     elgg_extend_view('metatags', 'scripts/ajaxify');
+    elgg_extend_view('js/initialise_elgg', 'js/ajaxify');
     
 	register_action('ajax/securitytoken', false, dirname(__FILE__)."/actions/ajax/securitytoken.php" );
 	register_action('entity/delete', false, dirname(__FILE__)."/actions/entities/delete.php");

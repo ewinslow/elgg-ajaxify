@@ -4,7 +4,6 @@
  */
 
 ?>
-<script type="text/javascript" src="<?php echo "{$vars['url']}_css/js.php?js=ajaxify&amp;viewtype=default&amp;lastcache={$vars['config']->lastcache}"; ?>"></script>
 <script type="text/javascript">
 /**
  * Don't want to cache these -- they could change for every request
