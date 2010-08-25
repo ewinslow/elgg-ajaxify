@@ -51,18 +51,19 @@ function ajaxify_is_xhr() {
 function ajaxify_forward_hook($hook, $type, $location, $params)
 {
 	if (ajaxify_is_xhr()) {
-		header("Content-type: application/json");
-		
-		$params['system_messages'] = system_messages(NULL, "");
-		
+		//grab any data echo'd in the action
 		$output = ob_get_clean();
 		
-		//Avoid double-encoding for json output
-		try {
-			$output = json_decode($output);
-		} catch(Exception $e) {}
+		//Avoid double-encoding in case data is json
+		$json = json_decode($output);
+		if (isset($json)) {
+			$params['output'] = $json;
+		} else {
+			$params['output'] = $output;
+		}
 		
-		$params['output'] = $output;
+		//flush and return system messages register
+		$params['system_messages'] = system_messages(NULL, "");
 		
 		if (isset($params['system_messages']['errors'])) {
 			$params['status'] = -1;
@@ -70,17 +71,19 @@ function ajaxify_forward_hook($hook, $type, $location, $params)
 			$params['status'] = 0;
 		}
 		
+		header("Content-type: application/json");
 		echo json_encode($params);
 		exit;
 	}
 }
 
 /**
- * Whenever we call an action, we want to be able to get data back,
- * so we'll buffer all the output and include in the returning json.
+ * Buffer all output echo'd in the action for inclusion in the returned JSON.
  */
 function ajaxify_action_hook() {
-	ob_start();
+	if (ajaxify_is_xhr()) {
+		ob_start();
+	}
 }
 
 
