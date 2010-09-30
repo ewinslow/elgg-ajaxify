@@ -11,8 +11,8 @@ function ajaxify_init()
     elgg_extend_view('metatags', 'scripts/ajaxify');
     elgg_extend_view('js/initialise_elgg', 'js/ajaxify');
     
-	register_action('ajax/securitytoken', false, dirname(__FILE__)."/actions/ajax/securitytoken.php" );
-	register_action('entity/delete', false, dirname(__FILE__)."/actions/entities/delete.php");
+	register_action('ajax/securitytoken', TRUE, dirname(__FILE__)."/actions/ajax/securitytoken.php");
+	register_action('entity/delete', FALSE, dirname(__FILE__)."/actions/entities/delete.php");
 	
 	elgg_view_register_simplecache('js/ajaxify');
 	elgg_view_register_simplecache('js/languages/en');
