@@ -18,7 +18,7 @@ function ajaxify_init()
 	elgg_view_register_simplecache('js/languages/en');
 		
 	register_plugin_hook('action', 'all', 'ajaxify_action_hook');
-	register_plugin_hook('forward', 'system', 'ajaxify_forward_hook');
+	register_plugin_hook('forward', 'all', 'ajaxify_forward_hook');
 }
 
 
