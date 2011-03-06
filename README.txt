@@ -1,6 +1,6 @@
-templates.xml 
+templates.xml
 =============
-templates.xml contains some javascript templates you can add to your 
+templates.xml contains some javascript templates you can add to your
 Eclipse environment.  You'll need WTP 3.1. To add the templates, go to...
 
 Window->Preferences->Web->JavaScript->Editor->Templates->Import...
@@ -12,7 +12,7 @@ coding conventions.
 
 jsTestDriver.conf
 =================
-I use jsTestDriver for testing (http://code.google.com/p/js-test-driver/). 
+I use jsTestDriver for testing (http://code.google.com/p/js-test-driver/).
 jsTestDriver.conf is the configuration file for running ajaxify.  Unless you
 are helping to develop ajaxify, you can safely ignore this file.
 
@@ -34,4 +34,4 @@ NOTE: Doing this adds about ~100k to your javascript environment!  We do it this
 way because
 1) This is more cacheable than dynamically including only specific translations.
 2) It's not _every language_, otherwise there could easily be 1M+ of javascript!!
-3) It's lazy loaded, so you should see _no_ effect on initial load time!
+3) It's lazy loaded, so you should see *no* effect on initial load time!
