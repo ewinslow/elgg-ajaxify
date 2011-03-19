@@ -1,0 +1,4 @@
+== 1.8 ==
+
+* Most of the code from version 0.1 was accepted into Elgg core, therefore it was removed.
+* All javascript is in a single file, since there is so little left over.
