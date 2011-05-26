@@ -32,11 +32,12 @@ elgg.view = function(name, options) {
 elgg.ajaxify.likes = function(item) {
 	actionURL = $(item).find('a').attr('href');
 	entityGUID = $(item).closest('li[id|="elgg-object"]').attr('id').match(/[0-9]+/)[0];
-	elgg.action(actionURL);
-	elgg.view('likes/display', {
-			data: {guid: entityGUID}, 
-			target: $(item),
-			cache: false 
+	elgg.action(actionURL, {success: function() {
+			elgg.view('likes/display', {
+				data: {'guid': entityGUID}, 
+				target: $(item),
+			});
+		}
 	});
 }
 
