@@ -15,32 +15,29 @@ elgg.ajaxify.init = function() {
  * @example Usage:
  * Use it to fetch a view using /ajax/view
  * can also be used to refresh a view
- * elgg.view('
+ * elgg.view('likes/display', {data: {guid: GUID}, target: targetDOM})
  * @param {string} name Viewname
- * @param {Object} vars Parameters to pass to the view
- * @param {Object} options {@see jQuery#ajax}
- * @return {XMLHttpRequest}
+ * @param {Object} options Parameters to the view along with jQuery options {@see jQuery#ajax}
+ * @return {void}
  */
-elgg.view = function(name, vars, options) {
+elgg.view = function(name, options) {
 	elgg.assertTypeOf('string', name);
-	var url = elgg.normalize_url('ajax/view/'+name+'?');
-	for (key in vars) {
-		url = url.concat(key+'='+vars[key]+'&');
+	var url = elgg.normalize_url('ajax/view/'+name);
+	options.success = function(data) {
+		$(options.target).html(data);
 	}
-	//remove the extra &
-	url = url.substring(0, url.length - 1);
-	return elgg.post(url, options);
+	elgg.get(url, options);
 }
 
-elgg.ajaxify.likes = function(object) {
-	actionURL = $(object).find('a').attr('href');
-	guid = $(object).parents('li[id|="elgg-object"]').attr('id').match(/[0-9]+/);
+elgg.ajaxify.likes = function(item) {
+	actionURL = $(item).find('a').attr('href');
+	entityGUID = $(item).closest('li[id|="elgg-object"]').attr('id').match(/[0-9]+/)[0];
 	elgg.action(actionURL);
-	elgg.view('likes/display', {guid: guid}, {cache: false, success: function(data) {
-			$(object).html(data);
-		}
+	elgg.view('likes/display', {
+			data: {guid: entityGUID}, 
+			target: $(item),
+			cache: false 
 	});
-
 }
 
 elgg.register_hook_handler('init', 'system', elgg.ajaxify.init);
