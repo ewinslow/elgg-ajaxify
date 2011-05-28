@@ -1,7 +1,6 @@
 <?php
 
 function ajaxify_init() {
-	elgg_register_js('ajaxify', 'mod/ajaxify/js/ajaxify.js', 'footer');
 	$cached_url = elgg_get_simplecache_url('js', 'ajaxify');
 	elgg_register_js('elgg.ajaxify', $cached_url, 'footer');
 
