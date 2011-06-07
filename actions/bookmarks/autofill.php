@@ -17,8 +17,8 @@ if (elgg_is_xhr()) {
 		$context = stream_context_create(array('http' => array('header' => 'Connection: close')));
 		$page = file_get_contents($uri, false, $context);
 		if ($page) {
-			if (preg_match("#<title>(.*)</title>#i", $page, $title)) {
-				echo json_encode(array("title" => "$title[1]"));
+			if (preg_match("#<title>(.*)</title>.*", $page, $content)) {
+				echo json_encode(array("title" => "$content[1]", "description" => (("$content[2]"))));
 			}
 		} 
 	}

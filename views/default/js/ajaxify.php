@@ -11,7 +11,7 @@ elgg.ajaxify.init = function() {
 	});
 	$('.elgg-menu-item-delete').live('click', function(event) {
 		event.preventDefault();
-		elgg.ajaxify.delete_entity(elgg.ajaxify.getMenuItemGUID(this));
+		elgg.ajaxify.delete_entity(elgg.ajaxify.getGUIDFromMenuItem(this));
 	});
 	$('input[name=address]').live('blur', function(event) {
 		elgg.ajaxify.bookmarks(this);
@@ -33,8 +33,14 @@ elgg.ajaxify.init = function() {
 elgg.view = function(name, options) {
 	elgg.assertTypeOf('string', name);
 	var url = elgg.normalize_url('ajax/view/'+name);
-	options.success = function(data) {
-		$(options.target).html(data);
+	if (elgg.isNullOrUndefined(options.success)) {
+		options.success = function(data) {
+			var method = 'html';
+			if (!elgg.isNullOrUndefined(options.manipulationMethod)) {
+				method = options.manipulationMethod;
+			}
+			eval('$(options.target).'+method+'(data)');
+		}
 	}
 	elgg.get(url, options);
 };
@@ -56,31 +62,41 @@ elgg.ajaxify.delete_entity = function(guid) {
 };
 
 /**
- * Get GUID of current entity to which the menu item belongs
+ * Parse guid from ElggMenuItem 
  *
- * @param {Object} The list item object which is clicked
- * @return {String}
+ * @param item {Object} List item 
+ * @return guid {String}
  */
 
-elgg.ajaxify.getMenuItemGUID = function(item) {
-	return $(item).closest('li[id|="elgg-object"]').attr('id').match(/[0-9]+/)[0];
+elgg.ajaxify.getGUIDFromMenuItem = function(item) {
+	actionURL = $(item).find('a').attr('href');
+	return actionURL.match(/guid=(\d+)/)[1];
 };
 
-//Incomplete
 elgg.ajaxify.thewire = function(button) {
 	elgg.action('thewire/add', {
 		data: {
 			body: $('#thewire-textarea').val()
 		},
-		cache: false,
 		success: function(response) {
+			$('#thewire-textarea').val('');
+			elgg.view('entities/getentity', {
+				cache: false,
+				data: {
+					limit: '1',
+					subtype: 'thewire',
+				},
+				success: function(entities_list) {
+					var entities = $(entities_list).find('.elgg-list-item');
+					$('.elgg-entity-list').prepend(entities);
+				},
+			});
 		},
 	});
 };
 
 elgg.ajaxify.likes = function(item) {
-	actionURL = $(item).find('a').attr('href');
-	entityGUID = elgg.ajaxify.getMenuItemGUID(item);
+	var entityGUID = elgg.ajaxify.getGUIDFromMenuItem(item);
 	elgg.action(actionURL, {
 		success: function() {
 			elgg.view('likes/display', {
@@ -95,8 +111,8 @@ elgg.ajaxify.likes = function(item) {
 
 
 elgg.ajaxify.showLoading = function(options) {
-	ajaxLoader = elgg.normalize_url('_graphics/ajax_loader.gif');
-	oldDOM = $(options.DOM);
+	var ajaxLoader = elgg.normalize_url('_graphics/ajax_loader.gif');
+	var oldDOM = $(options.DOM);
 	if (elgg.isNullOrUndefined(options.alt_text)) {
 		options.alt_text = 'Loading';
 	}
@@ -111,12 +127,11 @@ elgg.ajaxify.showLoading = function(options) {
 };
 
 elgg.ajaxify.removeLoading = function(options) {
-	options.animObj.after(options.DOM);
-	options.animObj.replaceWith();
+	options.animObj.replaceWith(options.DOM);
 };
 
 elgg.ajaxify.bookmarks = function(input) {
-	inputURL = $(input).val().trim();
+	var inputURL = $(input).val().trim();
 	loadingObj = elgg.ajaxify.showLoading({
 		DOM: $('input[name=title]'),
 		id: 'loadingTitle',
