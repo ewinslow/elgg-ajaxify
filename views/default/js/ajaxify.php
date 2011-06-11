@@ -1,17 +1,23 @@
 elgg.provide('elgg.ajaxify');
 
+//Can we consider something like elgg.bind() ?
+
 elgg.ajaxify.init = function() {
 	$('.elgg-menu-item-likes').live('click', function(event) {
-		event.preventDefault();
 		elgg.ajaxify.likes(this);
+		event.preventDefault();
 	});
 	$('#thewire-submit-button').live('click', function(event) {
+		elgg.ajaxify.thewire_add(this);
 		event.preventDefault();
-		elgg.ajaxify.thewire(this);
+	});
+	$('.elgg-menu-item-reply').live('click', function(event) {
+		elgg.ajaxify.thewire_reply(this);
+		event.preventDefault();
 	});
 	$('.elgg-menu-item-delete').live('click', function(event) {
-		event.preventDefault();
 		elgg.ajaxify.delete_entity(elgg.ajaxify.getGUIDFromMenuItem(this));
+		event.preventDefault();
 	});
 	$('input[name=address]').live('blur', function(event) {
 		elgg.ajaxify.bookmarks(this);
@@ -34,12 +40,9 @@ elgg.view = function(name, options) {
 	elgg.assertTypeOf('string', name);
 	var url = elgg.normalize_url('ajax/view/'+name);
 	if (elgg.isNullOrUndefined(options.success)) {
+		options.manipulationMethod = options.manipulationMethod || 'html';
 		options.success = function(data) {
-			var method = 'html';
-			if (!elgg.isNullOrUndefined(options.manipulationMethod)) {
-				method = options.manipulationMethod;
-			}
-			eval('$(options.target).'+method+'(data)');
+			$(options.target)[options.manipulationMethod](data);
 		}
 	}
 	elgg.get(url, options);
@@ -73,80 +76,20 @@ elgg.ajaxify.getGUIDFromMenuItem = function(item) {
 	return actionURL.match(/guid=(\d+)/)[1];
 };
 
-elgg.ajaxify.thewire = function(button) {
-	elgg.action('thewire/add', {
-		data: {
-			body: $('#thewire-textarea').val()
-		},
-		success: function(response) {
-			$('#thewire-textarea').val('');
-			elgg.view('entities/getentity', {
-				cache: false,
-				data: {
-					limit: '1',
-					subtype: 'thewire',
-				},
-				success: function(entities_list) {
-					var entities = $(entities_list).find('.elgg-list-item');
-					$('.elgg-entity-list').prepend(entities);
-				},
-			});
-		},
-	});
-};
-
-elgg.ajaxify.likes = function(item) {
-	var entityGUID = elgg.ajaxify.getGUIDFromMenuItem(item);
-	elgg.action(actionURL, {
-		success: function() {
-			elgg.view('likes/display', {
-				data: {
-					'guid': entityGUID
-				}, 
-				target: $(item),
-			});
-		}
-	});
-};
-
-
 elgg.ajaxify.showLoading = function(options) {
 	var ajaxLoader = elgg.normalize_url('_graphics/ajax_loader.gif');
-	var oldDOM = $(options.DOM);
-	if (elgg.isNullOrUndefined(options.alt_text)) {
-		options.alt_text = 'Loading';
-	}
-	if (elgg.isNullOrUndefined(options.id)) {
-		return false;
-	}
-	$(options.DOM).replaceWith('<img id="'+options.id+'" alt="'+options.alt_text+'" src="'+ajaxLoader+'" width="'+options.width+'" height="'+options.height+'" />');
-	return {
-		DOM: oldDOM,
-		animObj: $('#'+options.id),
-	}
+	oldDOM = $(options.DOM);
+	ajax_loaderID = 'ajax-loader';
+	options.alt_text = options.alt_text || 'Loading';
+	options.width = options.width || '30';
+	options.height = options.height || '30';
+	options.alt_text = options.alt_text || 'Loading';
+	options.manipulationMethod = options.manipulationMethod || 'append';
+	$(options.DOM)[options.manipulationMethod]('<img id="'+ajax_loaderID+'" alt="'+options.alt_text+'" src="'+ajaxLoader+'" width="'+options.width+'" height="'+options.height+'" />');
 };
 
 elgg.ajaxify.removeLoading = function(options) {
-	options.animObj.replaceWith(options.DOM);
+	$('#'+ajax_loaderID).remove();
 };
 
-elgg.ajaxify.bookmarks = function(input) {
-	var inputURL = $(input).val().trim();
-	loadingObj = elgg.ajaxify.showLoading({
-		DOM: $('input[name=title]'),
-		id: 'loadingTitle',
-		width: '25px',
-		height: '25px',
-	});
-	elgg.action('bookmarks/autofill', {
-		data: {
-			'address': inputURL
-		},
-		success: function(response) {
-			elgg.ajaxify.removeLoading(loadingObj);
-			$('input[name=title]').val(response.output.title);
-		},
-	});
-};
-	
 elgg.register_hook_handler('init', 'system', elgg.ajaxify.init);

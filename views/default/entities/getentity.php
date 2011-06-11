@@ -12,6 +12,7 @@ if (elgg_is_xhr()) {
 		'type' => 'object',
 		'subtype' => $subtype,
 		'limit' => $limit,
+		'guid' => $guid,
 		'pagination' => FALSE
 	));
 	echo $entities;
