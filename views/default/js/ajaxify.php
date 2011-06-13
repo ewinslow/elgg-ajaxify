@@ -8,7 +8,7 @@ elgg.ajaxify.init = function() {
 		event.preventDefault();
 	});
 	$('#thewire-submit-button').live('click', function(event) {
-		elgg.ajaxify.thewire_add(this);
+		elgg.ajaxify.thewire.add(this);
 		event.preventDefault();
 	});
 	$('.elgg-menu-item-reply').live('click', function(event) {

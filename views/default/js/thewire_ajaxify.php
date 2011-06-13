@@ -1,23 +1,22 @@
-elgg.register_hook_handler('actions:success', 'thewire', 'elgg.ajaxify.thewire_success'); 
-elgg.register_hook_handler('actions:processing', 'thewire', 'elgg.ajaxify.thewire_processing'); 
+elgg.provide('elgg.ajaxify.thewire');
 
 /**
 * Handlers - There are three hooks for which the handlers can be bound: actions:success, actions:processing, actions:fail
 * @example 
-* elgg.ajaxify.thewire_success = function(hook, type, params, value) {
+* elgg.ajaxify.thewire.success_handler = function(hook, type, params, value) {
 * 		//Check for type of success (Successful post or reply or anything else)
 * 		//Update DOMs accordingly
 * }
 *
 */
 
-elgg.ajaxify.thewire_success = function(hook, type, params, value) {
-	if (params.type === 'thewire_add') {
+elgg.ajaxify.thewire.success_handler = function(hook, type, params, value) {
+	if (params.type === 'thewire/add') {
 		elgg.view('entities/getentity', {
 			cache: false,
 			data: {
 				limit: '1',
-				guid: value.entityGUID,
+				guid: value.output.guid,
 				subtype: 'thewire',
 			},
 			success: function(entities_list) {
@@ -25,32 +24,31 @@ elgg.ajaxify.thewire_success = function(hook, type, params, value) {
 				var entities = $(entities_list).find('.elgg-list-item');
 				$('.elgg-entity-list').prepend(entities);
 				elgg.ajaxify.removeLoading();
-				$('#thewire-text-remaining span').html('140');
+				elgg.thewire.textCounter($('#thewire-textarea'), $('#thewire-characters-remaining span'), 140);
 			},
 		});
 	}
 };
 
-elgg.ajaxify.thewire_processing = function(hook, type, params, value) {
-	if (params.type === 'thewire_add') {
+elgg.ajaxify.thewire.processing_handler = function(hook, type, params, value) {
+	if (params.type === 'thewire/add') {
 		elgg.ajaxify.showLoading({
 			DOM: $('.elgg-entity-list'),
 			manipulationMethod: 'prepend',
 			width: '30px',
 			height: '30px',
 		});
-		value.id = 'thewire-adding-post';
 	}
 };
 
-elgg.ajaxify.thewire_add = function(item) {
-	elgg.trigger_hook('actions:processing', 'thewire', {type: 'thewire_add'}, item);
+elgg.ajaxify.thewire.add = function(item) {
+	elgg.trigger_hook('actions:processing', 'thewire', {type: 'thewire/add'}, null);
 	elgg.action('thewire/add', {
 		data: {
 			body: $('#thewire-textarea').val()
 		},
 		success: function(response) {
-			elgg.trigger_hook('actions:success', 'thewire', {type: 'thewire_add'}, response);
+			elgg.trigger_hook('actions:success', 'thewire', {type: 'thewire/add'}, response);
 		},
 	});
 };
@@ -63,3 +61,5 @@ elgg.ajaxify.thewire_reply = function(item) {
 	});
 };
 
+elgg.register_hook_handler('actions:success', 'thewire', elgg.ajaxify.thewire.success_handler); 
+elgg.register_hook_handler('actions:processing', 'thewire', elgg.ajaxify.thewire.processing_handler); 
