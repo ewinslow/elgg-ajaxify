@@ -38,6 +38,9 @@ elgg.ajaxify.init = function() {
 
 elgg.view = function(name, options) {
 	elgg.assertTypeOf('string', name);
+	if (new RegExp("^(https?://)", "i").test(name)) {
+		name = name.split(elgg.config.wwwroot)[1];
+	}
 	var url = elgg.normalize_url('ajax/view/'+name);
 	if (elgg.isNullOrUndefined(options.success)) {
 		options.manipulationMethod = options.manipulationMethod || 'html';
