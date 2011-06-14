@@ -65,6 +65,18 @@ elgg.ajaxify.delete_entity = function(guid) {
 };
 
 /**
+ * Get URL from ElggMenuItem 
+ *
+ * @param item {Object} List item 
+ * @return URL {String}
+ */
+
+elgg.ajaxify.getURLFromMenuItem = function(item) {
+	var actionURL = $(item).find('a').attr('href');
+	return actionURL;
+};
+
+/**
  * Parse guid from ElggMenuItem 
  *
  * @param item {Object} List item 
@@ -72,8 +84,7 @@ elgg.ajaxify.delete_entity = function(guid) {
  */
 
 elgg.ajaxify.getGUIDFromMenuItem = function(item) {
-	actionURL = $(item).find('a').attr('href');
-	return actionURL.match(/guid=(\d+)/)[1];
+	return elgg.ajaxify.getURLFromMenuItem(item).match(/guid=(\d+)/)[1];
 };
 
 elgg.ajaxify.showLoading = function(options) {
