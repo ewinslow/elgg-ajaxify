@@ -4,7 +4,7 @@ elgg.provide('elgg.ajaxify');
 
 elgg.ajaxify.init = function() {
 	$('.elgg-menu-item-likes').live('click', function(event) {
-		elgg.ajaxify.likes(this);
+		elgg.ajaxify.likes.action(this);
 		event.preventDefault();
 	});
 	$('#thewire-submit-button').live('click', function(event) {
