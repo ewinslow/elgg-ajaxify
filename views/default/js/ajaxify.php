@@ -1,7 +1,5 @@
 elgg.provide('elgg.ajaxify');
 
-//Can we consider something like elgg.bind() ?
-
 elgg.ajaxify.init = function() {
 	$('.elgg-menu-item-likes').live('click', function(event) {
 		elgg.ajaxify.likes.action(this);
@@ -11,9 +9,12 @@ elgg.ajaxify.init = function() {
 		elgg.ajaxify.thewire.add(this);
 		event.preventDefault();
 	});
-	$('.elgg-menu-item-reply').live('click', function(event) {
-		elgg.ajaxify.thewire_reply(this);
-		event.preventDefault();
+	$('.elgg-menu-item-reply').toggle(function() {
+		elgg.ajaxify.thewire.reply(this);
+		$(this).find('a').html('Close');
+	}, function() {
+		$(this).find('a').html('Reply');
+		$(this).closest('.elgg-list-item').find('div[id^=elgg-reply-div]').slideUp('fast');
 	});
 	$('.elgg-menu-item-delete').live('click', function(event) {
 		elgg.ajaxify.delete_entity(elgg.ajaxify.getGUIDFromMenuItem(this));

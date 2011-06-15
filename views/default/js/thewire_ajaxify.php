@@ -54,10 +54,23 @@ elgg.ajaxify.thewire.add = function(item) {
 };
 
 //Incomplete
-elgg.ajaxify.thewire_reply = function(item) {
-	elgg.view($(item).find('a').attr('href'), {
-		targetDOM: $(item).closest('.elgg-list-item'),
-		manipulationMethod: 'append',
+elgg.ajaxify.thewire.reply = function(item) {
+	var urlParts = $(item).find('a').attr('href').split('/');
+	var guid = urlParts[urlParts.length - 1];
+	
+	elgg.view('thewire/thewire_reply', {
+		data: {
+			'guid': guid,
+		},
+		success: function(response) {
+			var replyDiv = document.createElement('div');
+			$(replyDiv).attr('id', 'elgg-reply-div-'+guid);
+			$(replyDiv).html(response);
+			$(replyDiv).css('display', 'none');
+			$(item).closest('.elgg-list-item').append(replyDiv);
+			$(replyDiv).slideDown('fast');
+			$(replyDiv).find('textarea').focus();
+		},
 	});
 };
 
