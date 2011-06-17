@@ -1,17 +1,12 @@
 elgg.ajaxify.bookmarks = function(input) {
 	var inputURL = $(input).val().trim();
-	elgg.ajaxify.showLoading({
-		DOM: $('input[name=title]'),
-		width: '25px',
-		height: '25px',
-		manipulationMethod: 'prepend',
-	});
+	$('input[name=title]').prepend(elgg.ajaxify.ajaxLoader);
 	elgg.action('bookmarks/autofill', {
 		data: {
 			'address': inputURL
 		},
 		success: function(response) {
-			elgg.ajaxify.removeLoading();
+			$(elgg.ajaxify.ajaxLoader).remove();
 			$('input[name=title]').val(response.output.title);
 		},
 	});

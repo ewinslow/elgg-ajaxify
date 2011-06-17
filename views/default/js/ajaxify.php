@@ -1,7 +1,7 @@
 elgg.provide('elgg.ajaxify');
 
 elgg.ajaxify.init = function() {
-	ajaxLoader = $('<div class=elgg-ajax-loader></div>');
+	elgg.ajaxify.ajaxLoader = $('<div class=elgg-ajax-loader></div>');
 	$('.elgg-menu-item-likes').live('click', function(event) {
 		elgg.ajaxify.likes.action(this);
 		event.preventDefault();

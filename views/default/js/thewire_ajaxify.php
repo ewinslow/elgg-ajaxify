@@ -23,7 +23,7 @@ elgg.ajaxify.thewire.success_handler = function(hook, type, params, value) {
 				$('#thewire-textarea').val('');
 				var entities = $(entities_list).find('.elgg-list-item');
 				$('.elgg-entity-list').prepend(entities);
-				ajaxLoader.remove();
+				elgg.ajaxify.ajaxLoader.remove();
 				elgg.thewire.textCounter($('#thewire-textarea'), $('#thewire-characters-remaining span'), 140);
 			},
 		});
@@ -32,7 +32,7 @@ elgg.ajaxify.thewire.success_handler = function(hook, type, params, value) {
 
 elgg.ajaxify.thewire.processing_handler = function(hook, type, params, value) {
 	if (params.type === 'thewire/add') {
-		$('.elgg-entity-list').prepend(ajaxLoader);
+		$('.elgg-entity-list').prepend(elgg.ajaxify.ajaxLoader);
 	}
 };
 
