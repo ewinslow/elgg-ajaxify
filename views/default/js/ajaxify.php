@@ -1,6 +1,7 @@
 elgg.provide('elgg.ajaxify');
 
 elgg.ajaxify.init = function() {
+	ajaxLoader = $('<div class=elgg-ajax-loader></div>');
 	$('.elgg-menu-item-likes').live('click', function(event) {
 		elgg.ajaxify.likes.action(this);
 		event.preventDefault();
@@ -89,22 +90,6 @@ elgg.ajaxify.getURLFromMenuItem = function(item) {
 
 elgg.ajaxify.getGUIDFromMenuItem = function(item) {
 	return elgg.ajaxify.getURLFromMenuItem(item).match(/guid=(\d+)/)[1];
-};
-
-elgg.ajaxify.showLoading = function(options) {
-	var ajaxLoader = elgg.normalize_url('_graphics/ajax_loader.gif');
-	oldDOM = $(options.DOM);
-	ajax_loaderID = 'ajax-loader';
-	options.alt_text = options.alt_text || 'Loading';
-	options.width = options.width || '30';
-	options.height = options.height || '30';
-	options.alt_text = options.alt_text || 'Loading';
-	options.manipulationMethod = options.manipulationMethod || 'append';
-	$(options.DOM)[options.manipulationMethod]('<img id="'+ajax_loaderID+'" alt="'+options.alt_text+'" src="'+ajaxLoader+'" width="'+options.width+'" height="'+options.height+'" />');
-};
-
-elgg.ajaxify.removeLoading = function(options) {
-	$('#'+ajax_loaderID).remove();
 };
 
 elgg.register_hook_handler('init', 'system', elgg.ajaxify.init);
