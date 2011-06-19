@@ -23,6 +23,9 @@ if (!$guid) {
 	forward(REFERER);
 }
 
+echo json_encode(array("guid" => $guid));
+system_message(elgg_echo("thewire:posted"));
+
 // Send response to original poster if not already registered to receive notification
 if ($parent_guid) {
 	thewire_send_response_notification($guid, $parent_guid, $user);
@@ -30,6 +33,4 @@ if ($parent_guid) {
 	forward("thewire/thread/$parent->wire_thread");
 }
 
-echo json_encode(array("guid" => $guid));
-system_message(elgg_echo("thewire:posted"));
 forward(REFERER);

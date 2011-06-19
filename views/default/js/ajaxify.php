@@ -6,23 +6,19 @@ elgg.ajaxify.init = function() {
 		elgg.ajaxify.likes.action(this);
 		event.preventDefault();
 	});
-	$('#thewire-submit-button').live('click', function(event) {
-		elgg.ajaxify.thewire.add(this);
-		event.preventDefault();
-	});
-	$('.elgg-menu-item-reply').toggle(function() {
-		elgg.ajaxify.thewire.reply(this);
-		$(this).find('a').html('Close');
-	}, function() {
-		$(this).find('a').html('Reply');
-		$(this).closest('.elgg-list-item').find('div[id^=elgg-reply-div]').slideUp('fast');
-	});
 	$('.elgg-menu-item-delete').live('click', function(event) {
 		elgg.ajaxify.delete_entity(elgg.ajaxify.getGUIDFromMenuItem(this));
 		event.preventDefault();
 	});
 	$('input[name=address]').live('blur', function(event) {
 		elgg.ajaxify.bookmarks(this);
+	});
+	//Default actions that have to be invoked after a successful AJAX request
+	$(document).ajaxSuccess(function(event, xhr, options) {
+		//Check for any system messages
+		var response = jQuery.parseJSON(xhr.responseText);
+		elgg.register_error(response.system_messages.error);
+		elgg.system_message(response.system_messages.success);
 	});
 };
 

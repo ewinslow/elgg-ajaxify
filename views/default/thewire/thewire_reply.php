@@ -9,8 +9,10 @@
 gatekeeper();
 elgg_load_js('elgg.thewire');
 
-$post = get_entity(get_input('guid'));
+$guid = get_input('guid');
 
-$content = elgg_view_form('thewire/add', array(), array('post' => $post));
+$post = get_entity($guid);
+
+$content = elgg_view_form('thewire/add', array("id" => "thewire-form-reply-$guid"), array('post' => $post));
 $content .= elgg_view('input/urlshortener');
 echo "$content<br /><br />";
