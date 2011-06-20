@@ -16,9 +16,15 @@ elgg.ajaxify.init = function() {
 	//Default actions that have to be invoked after a successful AJAX request
 	$(document).ajaxSuccess(function(event, xhr, options) {
 		//Check for any system messages
-		var response = jQuery.parseJSON(xhr.responseText);
-		elgg.register_error(response.system_messages.error);
-		elgg.system_message(response.system_messages.success);
+		try {
+			var response = jQuery.parseJSON(xhr.responseText);
+		} catch(JSONException) {
+			console.log('Not a JSON response');
+		}
+		if (response && response.system_messages) {
+			elgg.register_error(response.system_messages.error);
+			elgg.system_message(response.system_messages.success);
+		}
 	});
 };
 
@@ -36,6 +42,7 @@ elgg.ajaxify.init = function() {
 
 elgg.view = function(name, options) {
 	elgg.assertTypeOf('string', name);
+	//Check to see if its already a normalized url
 	if (new RegExp("^(https?://)", "i").test(name)) {
 		name = name.split(elgg.config.wwwroot)[1];
 	}

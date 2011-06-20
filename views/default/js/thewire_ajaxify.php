@@ -9,13 +9,16 @@ elgg.ajaxify.thewire.init = function() {
 				elgg.trigger_hook('create:success', 'thewire', {type: 'thewire/add'}, responseText);
 		},
 	});
-	$('.elgg-menu-item-reply').toggle(function() {
-		elgg.ajaxify.thewire.show_replyForm(this);
-		$(this).find('a').html('Close');
-	}, function() {
-		$(this).find('a').html('Reply');
-		$(this).closest('.elgg-list-item').find('div[id^=elgg-reply-div]').slideUp('fast');
+	$('.elgg-menu-item-reply').livequery(function() {
+		$(this).toggle(function() {
+			elgg.ajaxify.thewire.show_replyForm(this);
+			$(this).find('a').html('Close');
+		}, function() {
+			$(this).find('a').html('Reply');
+			$(this).closest('.elgg-list-item').find('div[id^=elgg-reply-div]').slideUp('fast');
+		});
 	});
+		
 };
 
 /**
@@ -59,7 +62,9 @@ elgg.ajaxify.thewire.create_success = function(hook, type, params, value) {
 				$('.elgg-entity-list').prepend(entities);
 				$(value.replyDiv).remove();
 				elgg.ajaxify.ajaxLoader.remove();
-				$(value.replyAnchor).html('Reply');
+				
+				//Simulate click event on close
+				$(value.replyMenuItem).click();
 			},
 		});
 	}
@@ -114,7 +119,7 @@ elgg.ajaxify.thewire.show_replyForm = function(item) {
 					elgg.trigger_hook('create:success', 'thewire', {type: 'thewire/reply'}, {
 						responseText: responseText,
 						replyDiv: $(replyDiv),
-						replyAnchor: item,
+						replyMenuItem: item,
 					});
 				},
 				error: function(xhr, reqStatus) {

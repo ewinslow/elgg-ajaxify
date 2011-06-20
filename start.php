@@ -7,6 +7,8 @@ function ajaxify_init() {
 	$cached_url = elgg_get_simplecache_url('js', 'likes_ajaxify');
 	elgg_register_js('elgg.ajaxify.likes', $cached_url, 'footer');
 	
+	elgg_register_js('jquery.livequery', 'mod/elgg-ajaxify/vendors/livequery/jquery.livequery.js', 'footer');
+	
 	//Extend the default javascript views
 	elgg_extend_view('js/thewire', 'js/thewire_ajaxify');
 
@@ -15,6 +17,7 @@ function ajaxify_init() {
 	elgg_register_action('thewire/add', dirname(__FILE__) . "/actions/thewire/add.php");
 	elgg_register_action('bookmarks/autofill', dirname(__FILE__) . "/actions/bookmarks/autofill.php");
 
+	elgg_load_js('jquery.livequery');
 	elgg_load_js('elgg.ajaxify');
 	elgg_load_js('elgg.ajaxify.likes');
 }
