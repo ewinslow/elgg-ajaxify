@@ -23,12 +23,38 @@ elgg.ajaxify.comments.init = function() {
 			});
 		},
 	});
+	$('form[name=elgg_add_comment]').ajaxForm({
+		beforeSubmit: function(arr, formObj, options) {
+			elgg.trigger_hook('create:submit', 'comments', {'type': 'plugin'}, {
+				'arr': arr,
+				'formObj': formObj,
+				'options': options,
+			});
+		},
+		success: function(responseText, statusText, xhr, formObj) {
+			elgg.trigger_hook('create:success', 'comments', {'type': 'plugin'}, {
+				'responseText': responseText,
+				'statusText': statusText,
+				'xhr': xhr,
+				'formObj': formObj,
+			});
+		},
+		error: function(xhr, reqStatus) {
+			elgg.trigger_hook('create:error', 'comments', {'type': 'plugin'}, {
+				'reqStatus': reqStatus,
+				'xhr': xhr,
+			});
+		},
+	});
 };
 
 elgg.ajaxify.comments.create_submit = function(hook, type, params, value) {
 	if (params.type === 'river') {
 		$(value.formObj).before(elgg.ajaxify.ajaxLoader);
 		$(value.formObj).hide('fast');
+	}
+	if (params.type === 'plugin') {
+		$(value.formObj).before(elgg.ajaxify.ajaxLoader);
 	}
 };
 
@@ -47,23 +73,35 @@ elgg.ajaxify.comments.create_success = function(hook, type, params, value) {
 				var comments_list = $(value.formObj).prevUntil('', 'ul.elgg-river-comments');
 				var comments_len = $(comments_list).children().length;
 				var annotations = $(response).find('.elgg-list-item');
-				console.log(comments_len);
 				if (comments_len) {
 					if (comments_len < 3) {
 						$(comments_list).append(annotations);
 					} else {
-						$(comments_list).find('li:first').slideUp('fast');
-						$(comments_list).find('li:first').remove();
-						$(comments_list).append(annotations);
 						//Update the more counter
-						var more_counter = $(value.formObj).prev().find('a');
-						var count  = parseInt($(more_counter).html().match(/\+(\d+)/)[1]) + 1;
-						$(more_counter).html().replace(/\d+/, String(count));
+						var more_counter = $(value.formObj).prev('.elgg-river-more').find('a');
+						if (!elgg.isNull(more_counter)) {
+							var count  = parseInt($(more_counter).html().match(/\+(\d+)/)[1]) + 1;
+							$(more_counter).html($(more_counter).html().replace(/\d+/, String(count)));
+							$(comments_list).find('li:first').slideUp('fast');
+							$(comments_list).find('li:first').remove();
+						}
+						$(comments_list).append(annotations);
 					}
+				} else {
+					annotations = $(response);
+					$(annotations).first().addClass('elgg-river-comments');
+					$(value.formObj).before(annotations);
 				}
+				//Reset the form
+				$(value.formObj).resetForm();
 			},
 		});
 		
+	}
+	//Incomplete
+	if (params.type === 'plugin') {
+		elgg.view('annotations/getannotations', {
+		});
 	}
 };
 
@@ -73,7 +111,6 @@ elgg.ajaxify.comments.create_error = function(hook, type, params, value) {
 		$(elgg.ajaxify.ajaxLoader).next().show('fast');
 		elgg.register_error(value.reqStatus);
 		elgg.ajaxify.ajaxLoader.remove();
-
 	}
 };
 
