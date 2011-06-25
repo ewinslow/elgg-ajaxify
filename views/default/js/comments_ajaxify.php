@@ -60,7 +60,6 @@ elgg.ajaxify.comments.create_submit = function(hook, type, params, value) {
 
 elgg.ajaxify.comments.create_success = function(hook, type, params, value) {
 	if (params.type === 'river') {
-		elgg.ajaxify.ajaxLoader.remove();
 		var guid = $(value.formObj).find('input[name=entity_guid]').val();
 		elgg.view('annotations/getannotations', {
 			cache: false,
@@ -73,13 +72,14 @@ elgg.ajaxify.comments.create_success = function(hook, type, params, value) {
 				var comments_list = $(value.formObj).prevUntil('', 'ul.elgg-river-comments');
 				var comments_len = $(comments_list).children().length;
 				var annotations = $(response).find('.elgg-list-item');
+				elgg.ajaxify.ajaxLoader.remove();
 				if (comments_len) {
 					if (comments_len < 3) {
 						$(comments_list).append(annotations);
 					} else {
 						//Update the more counter
 						var more_counter = $(value.formObj).prev('.elgg-river-more').find('a');
-						if (!elgg.isNull(more_counter)) {
+						if (more_counter.length !== 0) {
 							var count  = parseInt($(more_counter).html().match(/\+(\d+)/)[1]) + 1;
 							$(more_counter).html($(more_counter).html().replace(/\d+/, String(count)));
 							$(comments_list).find('li:first').slideUp('fast');
@@ -96,11 +96,30 @@ elgg.ajaxify.comments.create_success = function(hook, type, params, value) {
 				$(value.formObj).resetForm();
 			},
 		});
-		
 	}
-	//Incomplete
 	if (params.type === 'plugin') {
+		var guid = $(value.formObj).find('input[name=entity_guid]').val();
 		elgg.view('annotations/getannotations', {
+			cache: false,
+			data: {
+				'limit': 1,
+				'annotation_name': 'generic_comment',
+				'guid': guid,
+			},
+			success: function(response) {
+				var comments_list = $(value.formObj).prevUntil('', 'ul.elgg-annotation-list');
+				var comments_len = $(comments_list).children().length;
+				var annotations = $(response).find('.elgg-list-item');
+				elgg.ajaxify.ajaxLoader.remove();
+				if (comments_len) {
+					$(comments_list).append(annotations);
+				} else {
+					annotations = $(response);
+					$(value.formObj).before(annotations);
+				}
+				//Reset the form
+				$(value.formObj).resetForm();
+			}
 		});
 	}
 };
