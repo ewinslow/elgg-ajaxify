@@ -1,5 +1,8 @@
 elgg.provide('elgg.ajaxify.comments');
 elgg.ajaxify.comments.init = function() {
+	//Limit the number of comments that are fetched upon clicking more
+	elgg.ajaxify.comments.more_limit = 50;
+
 	$('form[id^=comments-add-]').ajaxForm({
 		beforeSubmit: function(arr, formObj, options) {
 			elgg.trigger_hook('create:submit', 'comments', {'type': 'river'}, {
@@ -45,6 +48,14 @@ elgg.ajaxify.comments.init = function() {
 				'xhr': xhr,
 			});
 		},
+	});
+	$('.elgg-river-more a').livequery(function() {
+		elgg.trigger_hook('read:submit', 'comments', {'type': 'river'}, {
+			'link': $(this),
+		});
+		elgg.trigger_hook('read:success', 'comments', {'type': 'river'}, {
+			'link': $(this),
+		});
 	});
 };
 
@@ -133,7 +144,48 @@ elgg.ajaxify.comments.create_error = function(hook, type, params, value) {
 	}
 };
 
+elgg.ajaxify.comments.read_submit = function(hook, type, params, value) {
+	if (params.type == 'river') {
+		$(value.link).parent('.elgg-river-more').before(elgg.ajaxify.ajaxLoader);
+		$(value.link).parent('.elgg-river-more').hide();
+	}
+};
+
+elgg.ajaxify.comments.read_success = function(hook, type, params, value) {
+	if (params.type == 'river') {
+		var guid = $(value.link).next('form[id^=comments-add]').children('input[name=guid]').attr('name');
+		var count  = parseInt($(value.link).html().match(/\+(\d+)/)[1]);
+		elgg.view('annotations/getannotations', {
+			cache: false,
+			data: {
+				'limit': elgg.ajaxify.comments.more_limit,
+				'annotation_name': 'generic_comment',
+				'guid': guid,
+			},
+			success: function(response) {
+				var annotations = $(response).find('.elgg-list-item');
+				$(value.link).before('.elgg-river-comments').append(annotations);
+
+				if (count > elgg.ajaxify.comments.more_limit) {
+					$(value.link).html($(value.link).html().replace(/\d+/, String(count - elgg.ajaxify.comments.more_limit)));
+					$(value.link).show();
+				} else {
+					$(value.link).remove();
+				}
+				elgg.ajaxify.ajaxLoader.remove();
+			},
+			error: function() {
+				$(value.link).show();
+				elgg.ajaxify.ajaxLoader.remove();
+				window.location = $(value.link).attr('href');
+			},
+		});
+	}
+};
+
 elgg.register_hook_handler('init', 'system', elgg.ajaxify.comments.init);
 elgg.register_hook_handler('create:success', 'comments', elgg.ajaxify.comments.create_success); 
 elgg.register_hook_handler('create:submit', 'comments', elgg.ajaxify.comments.create_submit); 
 elgg.register_hook_handler('create:error', 'comments', elgg.ajaxify.comments.create_error); 
+elgg.register_hook_handler('read:success', 'comments', elgg.ajaxify.comments.read_success); 
+elgg.register_hook_handler('read:submit', 'comments', elgg.ajaxify.comments.read_submit); 
