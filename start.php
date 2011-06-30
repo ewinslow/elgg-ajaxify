@@ -13,6 +13,9 @@ function ajaxify_init() {
 	$cached_url = elgg_get_simplecache_url('js', 'search_ajaxify');
 	elgg_register_js('elgg.ajaxify.search', $cached_url, 'footer');
 	
+	$cached_url = elgg_get_simplecache_url('js', 'messages_ajaxify');
+	elgg_register_js('elgg.ajaxify.messages', $cached_url, 'footer');
+	
 	elgg_register_js('jquery.livequery', 'mod/elgg-ajaxify/vendors/livequery/jquery.livequery.js', 'footer');
 	
 	//Extend the default javascript views
@@ -28,6 +31,7 @@ function ajaxify_init() {
 	elgg_load_js('elgg.ajaxify.likes');
 	elgg_load_js('elgg.ajaxify.comments');
 	elgg_load_js('elgg.ajaxify.search');
+	elgg_load_js('elgg.ajaxify.messages');
 }
 
 elgg_register_event_handler('init', 'system', 'ajaxify_init');
