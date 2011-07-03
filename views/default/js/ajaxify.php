@@ -95,4 +95,25 @@ elgg.ajaxify.getGUIDFromMenuItem = function(item) {
 	return elgg.ajaxify.getURLFromMenuItem(item).match(/guid=(\d+)/)[1];
 };
 
+/**
+ * Parse view name from the current URL of the page 
+ *
+ * @param value {String} Value to return if no name is available
+ * @return viewname {String}
+ */
+
+elgg.ajaxify.getViewFromURL = function(value) {
+	elgg.assertTypeOf('string', value);
+	var viewname = '';
+	//Parse the URL to get the viewname
+	try {
+		viewname = new RegExp(elgg.config.wwwroot+'(.+)').exec(window.location.toString())[1];
+		//Strip off any parameters
+		viewname = viewname.split('?')[0];
+	} catch(exception) {
+		viewname = value;
+	}
+	return viewname;
+};
+
 elgg.register_hook_handler('init', 'system', elgg.ajaxify.init);

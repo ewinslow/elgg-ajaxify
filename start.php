@@ -16,7 +16,11 @@ function ajaxify_init() {
 	$cached_url = elgg_get_simplecache_url('js', 'messages_ajaxify');
 	elgg_register_js('elgg.ajaxify.messages', $cached_url, 'footer');
 	
+	$cached_url = elgg_get_simplecache_url('js', 'pagination_ajaxify');
+	elgg_register_js('elgg.ajaxify.pagination', $cached_url, 'footer');
+	
 	elgg_register_js('jquery.livequery', 'mod/elgg-ajaxify/vendors/livequery/jquery.livequery.js', 'footer');
+	elgg_register_js('jquery.URLParser', 'mod/elgg-ajaxify/vendors/jQuery-URL-Parser/jquery.url.js', 'footer');
 	
 	//Extend the default javascript views
 	elgg_extend_view('js/thewire', 'js/thewire_ajaxify');
@@ -27,11 +31,13 @@ function ajaxify_init() {
 	elgg_register_action('bookmarks/autofill', dirname(__FILE__) . "/actions/bookmarks/autofill.php");
 
 	elgg_load_js('jquery.livequery');
+	elgg_load_js('jquery.URLParser');
 	elgg_load_js('elgg.ajaxify');
 	elgg_load_js('elgg.ajaxify.likes');
 	elgg_load_js('elgg.ajaxify.comments');
 	elgg_load_js('elgg.ajaxify.search');
 	elgg_load_js('elgg.ajaxify.messages');
+	elgg_load_js('elgg.ajaxify.pagination');
 }
 
 elgg_register_event_handler('init', 'system', 'ajaxify_init');
