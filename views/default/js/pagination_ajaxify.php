@@ -5,12 +5,12 @@ elgg.ajaxify.pagination.init = function() {
 	//(Why?) Activity river stream and entity lists use different DOMs.
 	elgg.ajaxify.pagination.context = elgg.ajaxify.getViewFromURL('activity').split('/')[0];
 
-	$('.elgg-pagination li').live('click', function(event) {
+	$('.elgg-pagination a').live('click', function(event) {
 		elgg.trigger_hook('read:submit', 'pagination', {'type': elgg.ajaxify.pagination.context}, {
-			'item': $(this),
+			'link': $(this),
 		});
 		elgg.trigger_hook('read:success', 'pagination', {'type': elgg.ajaxify.pagination.context}, {
-			'item': $(this),
+			'link': $(this),
 		});
 		return false;
 	});
@@ -30,7 +30,7 @@ elgg.ajaxify.pagination.read_success = function(hook, type, params, value) {
 				type: $.url().param('type') || 'all',
 				subtype: $.url().param('subtype') || '',
 				page_type: elgg.ajaxify.getViewFromURL('').split('/')[1] || '',
-				offset: $(value.item).find('a').url().param('offset') || '', 
+				offset: $(value.link).url().param('offset') || '', 
 			},
 			success: function(response) {
 				var newRiver = $(response)[0];
@@ -49,7 +49,7 @@ elgg.ajaxify.pagination.read_success = function(hook, type, params, value) {
 				limit: 15,
 				page_type: elgg.ajaxify.getViewFromURL('').split('/')[1] || '',
 				pagination: 'TRUE',
-				offset: $(value.item).find('a').url().param('offset') || '',
+				offset: $(value.link).url().param('offset') || '',
 			},
 			success: function(response) {
 				var newList = $(response)[0];
