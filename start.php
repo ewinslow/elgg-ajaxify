@@ -21,7 +21,10 @@ function ajaxify_init() {
 	
 	elgg_register_js('jquery.livequery', 'mod/elgg-ajaxify/vendors/livequery/jquery.livequery.js', 'footer');
 	elgg_register_js('jquery.URLParser', 'mod/elgg-ajaxify/vendors/jQuery-URL-Parser/jquery.url.js', 'footer');
-	
+	elgg_register_js('jquery.autocomplete.html_extension', 'mod/elgg-ajaxify/vendors/jQuery-ui/jquery-ui-autocomplete-html-extension/jquery.ui.autocomplete.html.js', 'footer');
+
+	//Register css
+	elgg_register_css('jquery.ui', 'mod/elgg-ajaxify/vendors/jQuery-ui/css/overcast/jquery-ui-1.8.14.custom.css');
 	//Extend the default javascript views
 	elgg_extend_view('js/thewire', 'js/thewire_ajaxify');
 
@@ -32,12 +35,15 @@ function ajaxify_init() {
 
 	elgg_load_js('jquery.livequery');
 	elgg_load_js('jquery.URLParser');
+	elgg_load_js('jquery.autocomplete.html_extension');
 	elgg_load_js('elgg.ajaxify');
 	elgg_load_js('elgg.ajaxify.likes');
 	elgg_load_js('elgg.ajaxify.comments');
 	elgg_load_js('elgg.ajaxify.search');
 	elgg_load_js('elgg.ajaxify.messages');
 	elgg_load_js('elgg.ajaxify.pagination');
+	
+	elgg_load_css('jquery.ui');
 }
 
 elgg_register_event_handler('init', 'system', 'ajaxify_init');

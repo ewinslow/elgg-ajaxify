@@ -26,9 +26,11 @@ $display_query = htmlspecialchars($display_query, ENT_QUOTES, 'UTF-8', false);
 
 ?>
 
-<form class="elgg-search" action="<?php echo elgg_get_site_url(); ?>search" method="get">
-	<fieldset>
-		<input type="text" size="21" name="q" value="<?php echo elgg_echo('search'); ?>" onblur="if (this.value=='') { this.value='<?php echo elgg_echo('search'); ?>' }" onfocus="if (this.value=='<?php echo elgg_echo('search'); ?>') { this.value='' };" class="search-input" />
-		<input type="submit" value="<?php echo elgg_echo('search:go'); ?>" class="search-submit-button" />
-	</fieldset>
-</form>
+<div class="ui-widget">
+	<form class="elgg-search" action="<?php echo elgg_get_site_url(); ?>search" method="get">
+		<fieldset>
+			<input id="elgg-search-autocomplete" type="text" size="21" name="q" value="<?php echo elgg_echo('search'); ?>" onblur="if (this.value=='') { this.value='<?php echo elgg_echo('search'); ?>' }" onfocus="if (this.value=='<?php echo elgg_echo('search'); ?>') { this.value='' };" class="search-input" />
+			<input type="submit" value="<?php echo elgg_echo('search:go'); ?>" class="search-submit-button" />
+		</fieldset>
+	</form>
+</div>
