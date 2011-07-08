@@ -59,6 +59,9 @@ elgg.ajaxify.search.read_submit = function(hook, type, params, value) {
 		case 'groups':
 			forward_url = params.type+'/profile/'+guid;
 			break;
+		case 'messages':
+			forward_url = params.type+'/read/'+guid;
+			break;
 		case 'all':
 			switch (entity_type) {
 				case 'user': 
