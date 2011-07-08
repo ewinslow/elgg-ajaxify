@@ -1,6 +1,6 @@
 <?php
 /**
- * elgg-ajaxify English language file
+ * ajaxify English language file
  */
 
 $english = array(
