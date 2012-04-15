@@ -1,6 +1,7 @@
 define(function(require) {
 	var $ = require('jquery');
 	var elgg = require('elgg');
+	var i18n = require('elgg/i18n');
 	
 	function isSameOrigin(url1, url2) {
 		return url1.hostname == url2.hostname &&
@@ -18,12 +19,6 @@ define(function(require) {
 		}
 	});
 	
-	
-	
-	$(window).bind('popstate', function(event) {
-		elgg.trigger_hook('navigate', 'window', event, document.location);
-	});
-	
 	elgg.register_hook_handler('navigate', 'window', function(hook, type, event, url) {
 		var views = [
 			'admin/statistics/server',
@@ -32,18 +27,12 @@ define(function(require) {
 			'admin/settings/advanced',
 			'admin/appearance/menu_items',
 			'admin/appearance/profile_fields',
-			'admin/appearance/default_widgets',
 			'admin/appearance/customcss',
 			'admin/appearance/customlogo',
-			'admin/users/online',
 			'admin/users/add',
-			'admin/users/newest',
 			'admin/develop_tools/unit_tests',
 			'admin/develop_tools/preview',
-			'admin/develop_tools/inspect',
-			'admin/developers/settings',
-			'admin/administer_utilities/logbrowser',
-			'admin/administer_utilities/reportedcontent'
+			'admin/developers/settings'
 		];
 
 		var supported = false;
@@ -53,20 +42,26 @@ define(function(require) {
 		});
 		
 		if (supported) {
-			var contentUrl = elgg.config.wwwroot + 'ajax/view' + url.pathname + '?' + new Date();
+			var contentUrl = elgg.config.wwwroot + 'ajax/view' + url.pathname;
 			
-			// Refresh content area + title
-			require(['text!' + contentUrl, 'elgg/i18n'], function(content, i18n) {
-				var segments = event.target.pathname.split('/');
-				segments.shift();
-				segments.shift();
-				var title = i18n('admin:' + segments[0]) + ' : ' + i18n('admin:' + segments.join(':'));
-				$('.elgg-main').html(content);
-				$('.elgg-main').prepend('<div class="elgg-head"><h2>' + title + '</h2></div>');
-				
-				document.title = title;
-
-				window.history.pushState({}, '', event.target.href);
+			var $main = $('.elgg-main');
+			
+			// Update title
+			var segments = url.pathname.split('/');
+			segments.shift();
+			segments.shift();
+			var title = i18n('admin:' + segments[0]) + ' : ' + i18n('admin:' + segments.join(':'));
+			$main.html('<div class="elgg-head"><h2>' + title + '</h2></div>');
+			document.title = title;
+			
+			// Display a loader while we wait for the content to show up
+			var $loader = $('<div class="elgg-ajax-loader"></div>');
+			$main.append($loader);
+			
+			// Refresh content area.
+			require(['text!' + contentUrl], function(content) {
+				$loader.remove();
+				$main.append(content);
 			});
 			
 			// Update sidebar menu to reflect current page selection
@@ -74,6 +69,7 @@ define(function(require) {
 			
 			$('.elgg-menu-page a[href="' + url + '"]').parents('.elgg-menu-page li').addClass('elgg-state-selected');
 			
+			window.history.pushState({}, '', url.toString());
 			return false;
 		}
 	});

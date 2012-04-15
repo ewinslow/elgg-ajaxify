@@ -17,6 +17,7 @@ require.config({
 		'text': '/mod/ajaxify/vendors/requirejs-1.0.7/text.min',
 		'elgg/ajaxify/admin': '/mod/ajaxify/js/ajaxify/admin'
 	},
+	urlArgs: 'bust=' + (+new Date())
 });
 
 require(['elgg/ajaxify/admin'], function() {});
