@@ -10,6 +10,8 @@ function ajaxify_init() {
 	if (elgg_in_context('admin')) {
 		elgg_extend_view('page/elements/foot', 'requirejs/config/admin');
 	}
+
+	elgg_extend_view('css/admin', 'css/admin/ajaxify');
 	
 	if (elgg_is_admin_logged_in()) {
 		$views = array(

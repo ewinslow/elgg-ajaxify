@@ -3,20 +3,109 @@ define(function(require) {
 	var elgg = require('elgg');
 	var i18n = require('elgg/i18n');
 	
+	/**
+	 * Check if two urls have the same scheme, host, and port. 
+	 */
 	function isSameOrigin(url1, url2) {
-		return url1.hostname == url2.hostname &&
-               url1.protocol == url2.protocol &&
-               url1.port == url2.port;
+		return url1.host == url2.host &&
+               url1.protocol == url2.protocol;
 	}
 	
-	function isClickAjaxable(event) {
-		return event.target.href && !event.metaKey && !event.ctrlKey && isSameOrigin(location, event.target);
+	/**
+	 * If the user is holding any keys down that indicates "load in a new page", we don't want to ajaxify
+	 */
+	function isEventAjaxable(event) {
+		return !event.metaKey && !event.ctrlKey;
+	}
+
+	/**
+	 * It's only possible to ajaxify urls that are from this Elgg site
+	 */
+	function isUrlAjaxable(url) {
+		return url && url.indexOf(elgg.config.wwwroot) === 0;
 	}
 	
-	$('a').live('click', function(event) {
-		if (isClickAjaxable(event)) {
-			return elgg.trigger_hook('navigate', 'window', event, event.target);
+	/**
+	 * Whether the URL represents an Elgg action
+	 */
+	function isUrlAction(url) {
+		return url.indexOf('/action/') !== -1;
+	}
+	
+	/**
+	 * Get the name of the action from the given url.
+	 * 
+	 * @example
+	 * getActionFromUrl('http://example.org/action/do/something'); // returns 'do/something'
+	 * 
+	 * @warning This has undefined behavior if the url is not a valid action url.
+	 * @see isUrlAction
+	 */
+	function getActionFromUrl(url) {
+		// Ignore any query string
+		url = url.split('?')[0];
+		
+		// Get only the path after /action/
+		return url.substr(url.indexOf('/action/') + '/action/'.length);
+	}
+	
+	/**
+	 * If an action has been registered as ajaxable, send it to the server. Fires a bunch of hooks that
+	 * other plugins can listen for to update the UI, for example.
+	 */
+	function maybeSendAjaxAction(action, data, event) {
+		// Only ajaxify supported actions
+		var actions = elgg.trigger_hook('ajaxify', 'actions', event, {});
+		if (actions[action]) {
+			
+			// TODO: elgg.action could probably just fire all of these hooks automagically?
+			elgg.action(action, {
+				data: data,
+				beforeSend: function() { elgg.trigger_hook('action:before',   action, { data: data }); },
+				success:    function() { elgg.trigger_hook('action:success',  action, { data: data }); },
+				error:      function() { elgg.trigger_hook('action:error',    action, { data: data }); },
+				complete:   function() { elgg.trigger_hook('action:complete', action, { data: data }); }
+			});
+
+			return false;
+		}		
+	}
+	
+	elgg.register_hook_handler('ajaxify', 'actions', function(hook, type, event, actions) {
+		return $.extend(actions, {
+			'admin/menu/save': true,
+			'admin/site/update_basic': true,
+			'admin/site/update_advanced': true,
+			'developers/settings': true,
+			'plugins/settings/save': true,
+			'useradd': true
+		});
+	});
+
+	elgg.register_hook_handler('action:success', 'useradd', function(hook, type, vars) {
+		$('.elgg-form-useradd').resetForm();
+	});
+
+	$('a[href]').live('click', function(event) {
+		if (isEventAjaxable(event) && isUrlAjaxable(event.target.href)) {
+			if (isUrlAction(event.target.href)) {
+				var action = getActionFromUrl(event.target.href);
+				var data = event.target.search.substr(1); // Strip off initial '?'
+				return maybeSendAjaxAction(action, data, event);
+			} else {
+				return elgg.trigger_hook('navigate', 'window', event, event.target);
+			}
 		}
+	});
+	
+	$('form[method=POST][action]').live('submit', function(event) {
+		// Get the name of the action in a url
+		var action = getActionFromUrl(this.action);
+		
+		// TODO: Convert data to json instead of serialized query string.
+		var data = $(this).formSerialize();
+		
+		return maybeSendAjaxAction(action, data, event);
 	});
 	
 	elgg.register_hook_handler('navigate', 'window', function(hook, type, event, url) {
