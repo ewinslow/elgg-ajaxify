@@ -4,7 +4,11 @@ define(function(require) {
 	var i18n = require('elgg/i18n');
 	
 	/**
-	 * Check if two urls have the same scheme, host, and port. 
+	 * Check if two urls have the same scheme, host, and port.
+	 * 
+	 * @param {Location} url1
+	 * @param {Location} url2
+	 * @return {boolean}
 	 */
 	function isSameOrigin(url1, url2) {
 		return url1.host == url2.host &&
@@ -12,21 +16,30 @@ define(function(require) {
 	}
 	
 	/**
-	 * If the user is holding any keys down that indicates "load in a new page", we don't want to ajaxify
+	 * If the user is holding any keys down that indicates "load in a new page", we don't want to ajaxify.
+	 * 
+	 * @param {jQuery.Event} event
+	 * @return {boolean}
 	 */
 	function isEventAjaxable(event) {
 		return !event.metaKey && !event.ctrlKey;
 	}
 
 	/**
-	 * It's only possible to ajaxify urls that are from this Elgg site
+	 * It's only possible to ajaxify urls that are from this Elgg site.
+	 * 
+	 * @param {string} url
+	 * @return {boolean}
 	 */
 	function isUrlAjaxable(url) {
 		return url && url.indexOf(elgg.config.wwwroot) === 0;
 	}
 	
 	/**
-	 * Whether the URL represents an Elgg action
+	 * Whether the URL represents an Elgg action.
+	 * 
+	 * @param {string} url
+	 * @return {boolean}
 	 */
 	function isUrlAction(url) {
 		return url.indexOf('/action/') !== -1;
@@ -40,6 +53,9 @@ define(function(require) {
 	 * 
 	 * @warning This has undefined behavior if the url is not a valid action url.
 	 * @see isUrlAction
+	 * 
+	 * @param {string} url
+	 * @return {string}
 	 */
 	function getActionFromUrl(url) {
 		// Ignore any query string
