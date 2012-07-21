@@ -1,3 +1,9 @@
+<?php
+if (!elgg_in_context('admin')) {
+    return true;
+}
+?>
+
 <script>
 /**
  * Defines some modules to be reused so they can be refactored transparently later on.
