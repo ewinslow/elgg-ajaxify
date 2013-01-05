@@ -2,6 +2,18 @@
 if (!elgg_in_context('admin')) {
     return true;
 }
+
+global $AJAXIFY;
+
+$config = array(
+    'baseUrl' => '/ajax/view/js',
+    'paths' => array(),
+);
+
+foreach ($AJAXIFY->modules as $module) {
+    $config['paths'][$module] = substr(elgg_get_simplecache_url('js', $module), 0, -3);
+}
+
 ?>
 
 <script>
@@ -21,13 +33,7 @@ define('angular', function() { return angular; });
 define('angular/module/ngResource', function() { return angular; });
 define('angular/module/ngSanitize', function() { return angular; });
 
-requirejs.config({
-	baseUrl: '/ajax/view/js',
-	paths: {
-		'text': '<?php echo elgg_get_simplecache_url("js", "text"); ?>'.slice(0, -3)
-	},
-//	urlArgs: 'bust=' + (+new Date())
-});
+requirejs.config(<?php echo json_encode($config); ?>);
 
 require(['angular', 'angular/module/elggAdmin'], function(angular) {
 	angular.bootstrap(document, ['elggAdmin']);

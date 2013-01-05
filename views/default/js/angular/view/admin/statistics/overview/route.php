@@ -1,7 +1,7 @@
 // <script>
-define(function() {
+define(function(require) {
     return {
-    	templateUrl: '/ajax/view/admin/statistics/overview',
+    	template: require('text!./template.html'),
     	controller: function() {},
     };
 });
