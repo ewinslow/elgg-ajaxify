@@ -1,3 +1,4 @@
+// <script>
 /**
  * Experimental ajaxy features/API!
  */

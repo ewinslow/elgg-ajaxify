@@ -1,3 +1,4 @@
+// <script>
 define(function(require) {
 	var $ = require('jquery');
 	var elgg = require('elgg');
