@@ -1,5 +1,8 @@
 <?php
 
+elgg_register_viewtype('ajaxify');
+elgg_register_viewtype_fallback('ajaxify');
+
 elgg_extend_view('page/elements/foot', 'requirejs/config/admin');
 elgg_extend_view('css/admin', 'css/admin/ajaxify');
 
@@ -8,49 +11,15 @@ global $AJAXIFY;
 $AJAXIFY = new stdClass();
 
 $AJAXIFY->modules = array(
-	'elgg/ajaxify',
-	'elgg/ajaxify/admin',
-	'elgg/ajaxify/likes',
-	'angular/module/elggAdmin',
-	'text',
+        'elgg/Ajaxify',
+        'angular/module/elggAdmin',
+        'angular/resolve/elggPage',
+        'text',
 );
 
-if (elgg_is_admin_logged_in()) {
-        $AJAXIFY->views = array(
-                'admin/statistics/server',
-                'admin/statistics/overview',
-                'admin/settings/basic',
-                'admin/settings/advanced',
-                'admin/appearance/menu_items',
-                'admin/appearance/profile_fields',
-                'admin/appearance/default_widgets',
-                'admin/appearance/customcss',
-                'admin/appearance/customlogo',
-                'admin/users/online',
-                'admin/users/add',
-                'admin/users/newest',
-                'admin/develop_tools/unit_tests',
-                'admin/develop_tools/preview',
-                'admin/develop_tools/inspect',
-                'admin/developers/settings',
-                'admin/administer_utilities/logbrowser',
-                'admin/administer_utilities/reportedcontent',
-        );
-
-        foreach ($AJAXIFY->views as $view) {
-                // Every view potentially has a few AMD modules to define it.
-	        $AJAXIFY->modules[] = "angular/view/$view";
-		$AJAXIFY->modules[] = "angular/view/$view/resolve";
-		$AJAXIFY->modules[] = "angular/view/$view/Controller";
-
-		// And a template, which we need to be able to fetch via ajax
-		elgg_register_ajax_view("js/angular/view/$view/template.html");
-        }
-}
-
 foreach ($AJAXIFY->modules as $module) {
-	elgg_register_simplecache_view("js/$module");
-	elgg_register_js($module, elgg_get_simplecache_url('js', $module), 'footer');
+        elgg_register_simplecache_view("js/$module");
+        elgg_register_js($module, elgg_get_simplecache_url('js', $module), 'footer');
 }
 
 // Get your JS lib on!
@@ -74,31 +43,4 @@ elgg_unregister_plugin_hook_handler('register', 'menu:entity', 'likes_entity_men
 
 if (elgg_is_active_plugin('likes')) {
     elgg_load_js('elgg/ajaxify/likes');
-}
-
-if (elgg_is_admin_logged_in()) {
-	$views = array(
-		'admin/statistics/server',
-		'admin/statistics/overview',
-		'admin/settings/basic',
-		'admin/settings/advanced',
-		'admin/appearance/menu_items',
-		'admin/appearance/profile_fields',
-		'admin/appearance/default_widgets',
-		'admin/appearance/customcss',
-		'admin/appearance/customlogo',
-		'admin/users/online',
-		'admin/users/add',
-		'admin/users/newest',
-		'admin/develop_tools/unit_tests',
-		'admin/develop_tools/preview',
-		'admin/develop_tools/inspect',
-		'admin/developers/settings',
-		'admin/administer_utilities/logbrowser',
-		'admin/administer_utilities/reportedcontent',
-	);
-	
-	foreach ($views as $view) {
-		elgg_register_ajax_view($view);
-	}
 }
