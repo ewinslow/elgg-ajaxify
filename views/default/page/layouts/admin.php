@@ -29,10 +29,8 @@ elgg_load_js('angular');
 				'class' => 'elgg-menu-hz',
 			));
 
-			if (isset($vars['title'])) {
-				echo elgg_view_title($vars['title']);
-			}
 		?>
+			<h2 data-ng-bind="title"><?php echo $vars['title']; ?></h2>
 		</div>
 		<div data-ng-view>
 		<?php
