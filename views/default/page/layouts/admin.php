@@ -30,7 +30,9 @@ elgg_load_js('angular');
 			));
 
 		?>
-			<h2 data-ng-bind="title"><?php echo $vars['title']; ?></h2>
+			<h2 data-ng-bind="elggPage.title">
+				<?php echo $vars['title']; ?>
+			</h2>
 		</div>
 		<div data-ng-view>
 		<?php

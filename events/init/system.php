@@ -38,8 +38,10 @@ if (elgg_is_admin_logged_in()) {
         );
 
         foreach ($AJAXIFY->views as $view) {
-                // Every view is assumed to have a route definition that is a module
-	        $AJAXIFY->modules[] = "angular/view/$view/route";
+                // Every view potentially has a few AMD modules to define it.
+	        $AJAXIFY->modules[] = "angular/view/$view";
+		$AJAXIFY->modules[] = "angular/view/$view/resolve";
+		$AJAXIFY->modules[] = "angular/view/$view/Controller";
 
 		// And a template, which we need to be able to fetch via ajax
 		elgg_register_ajax_view("js/angular/view/$view/template.html");

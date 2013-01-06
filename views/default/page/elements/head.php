@@ -39,7 +39,7 @@ $release = get_version(true);
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="ElggRelease" content="<?php echo $release; ?>" />
 	<meta name="ElggVersion" content="<?php echo $version; ?>" />
-	<title data-ng-bind="title"><?php echo $title; ?></title>
+	<title data-ng-bind="elggPage.title"><?php echo $title; ?></title>
 	<?php echo elgg_view('page/elements/shortcut_icon', $vars); ?>
 
 <?php foreach ($css as $link) { ?>

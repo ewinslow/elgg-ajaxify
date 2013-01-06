@@ -6,15 +6,15 @@ define(function(require) {
 	
 	elggAdmin.config(function($routeProvider, $locationProvider) {
 		$locationProvider.html5Mode(true);
-		$routeProvider.when('/admin/statistics/overview', require('angular/view/admin/statistics/overview/route'));
-		$routeProvider.when('/admin/statistics/server', require('angular/view/admin/statistics/server/route'));
-		$routeProvider.when('/admin/users/add', require('angular/view/admin/users/add/route'));
-		$routeProvider.when('/admin/users/online', require('angular/view/admin/users/online/route'));
-		$routeProvider.when('/admin/users/newest', require('angular/view/admin/users/newest/route'));
+		$routeProvider.when('/admin/statistics/overview', require('angular/view/admin/statistics/overview'));
+		$routeProvider.when('/admin/statistics/server', require('angular/view/admin/statistics/server'));
+		$routeProvider.when('/admin/users/add', require('angular/view/admin/users/add'));
+		$routeProvider.when('/admin/users/online', require('angular/view/admin/users/online'));
+		$routeProvider.when('/admin/users/newest', require('angular/view/admin/users/newest'));
 		$routeProvider.otherwise({
 			template: 'Coming soon!',
 			controller: function($rootScope) {
-				$rootScope.title = "Hello, World!";
+				$rootScope.elggPage = { title: "Hello, World!" };
 			}
 		});
 	});
