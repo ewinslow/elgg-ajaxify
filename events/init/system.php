@@ -5,6 +5,7 @@ elgg_register_viewtype_fallback('ajaxify');
 
 elgg_extend_view('page/elements/foot', 'requirejs/config/admin');
 elgg_extend_view('css/admin', 'css/admin/ajaxify');
+elgg_extend_view('output/url', 'ajaxify/url', 1);
 
 global $AJAXIFY;
 
